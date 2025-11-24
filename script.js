@@ -12,7 +12,6 @@ const waveMax = 300;
 // --- Audio ---
 const oceanHum = document.getElementById('oceanHum');
 const chimes = document.getElementById('chimes');
-
 document.body.addEventListener('click', () => {
     oceanHum.play();
 });
@@ -30,20 +29,72 @@ function drawLine(time){
     ctx.stroke();
 }
 
-// --- Fond encre animé (simple bruit) ---
-function drawInkBackground(time){
-    const imageData = ctx.createImageData(canvas.width, canvas.height);
-    const data = imageData.data;
-    for(let i=0; i<data.length; i+=4){
-        let x = (i/4) % canvas.width;
-        let y = Math.floor(i/4 / canvas.width);
-        let n = Math.sin((x+y+time)/50) * 25 + 30; // bruit simple
-        data[i] = 0;
-        data[i+1] = 0;
-        data[i+2] = 20 + n; // bleu sombre
-        data[i+3] = 200; // opacité
+// --- BRUIT PERLIN SIMPLE POUR FOND ENCRE ---
+class PerlinNoise {
+    constructor(){
+        this.gradients = {};
+        this.memory = {};
     }
-    ctx.putImageData(imageData, 0, 0);
+    rand_vect(){
+        let theta = Math.random() * 2 * Math.PI;
+        return {x: Math.cos(theta), y: Math.sin(theta)};
+    }
+    dot_prod_grid(x, y, vx, vy){
+        let g_vect;
+        let d_vect = {x: x - vx, y: y - vy};
+        if(this.gradients[[vx,vy]]){
+            g_vect = this.gradients[[vx,vy]];
+        } else {
+            g_vect = this.rand_vect();
+            this.gradients[[vx,vy]] = g_vect;
+        }
+        return d_vect.x*g_vect.x + d_vect.y*g_vect.y;
+    }
+    smootherstep(x){ return x*x*x*(x*(x*6-15)+10); }
+    interp(x, a, b){ return a + this.smootherstep(x)*(b-a); }
+    get(x, y){
+        if(this.memory[[x,y]] !== undefined) return this.memory[[x,y]];
+        let x0 = Math.floor(x);
+        let x1 = x0 + 1;
+        let y0 = Math.floor(y);
+        let y1 = y0 + 1;
+
+        let sx = x - x0;
+        let sy = y - y0;
+
+        let n0 = this.dot_prod_grid(x, y, x0, y0);
+        let n1 = this.dot_prod_grid(x, y, x1, y0);
+        let ix0 = this.interp(sx, n0, n1);
+
+        n0 = this.dot_prod_grid(x, y, x0, y1);
+        n1 = this.dot_prod_grid(x, y, x1, y1);
+        let ix1 = this.interp(sx, n0, n1);
+
+        let value = this.interp(sy, ix0, ix1);
+        this.memory[[x,y]] = value;
+        return value;
+    }
+}
+
+const perlin = new PerlinNoise();
+
+// --- Dessin du fond volutes d'encre ---
+function drawInkBackground(time){
+    const imgData = ctx.createImageData(canvas.width, canvas.height);
+    const data = imgData.data;
+    let scale = 0.005; // zoom du bruit
+    for(let y=0; y<canvas.height; y++){
+        for(let x=0; x<canvas.width; x++){
+            let value = perlin.get(x*scale + time*0.01, y*scale + time*0.01);
+            let c = Math.floor((value + 1) * 50); // amplitude ajustable
+            let idx = (y*canvas.width + x)*4;
+            data[idx] = 0;
+            data[idx+1] = 0;
+            data[idx+2] = 20 + c; // bleu sombre
+            data[idx+3] = 200; // opacité
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
 }
 
 // --- Goutte et onde ---
