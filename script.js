@@ -4,11 +4,12 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let time = 0;
-const drop = {x: canvas.width/2, y: -50, radius: 20, falling: true};
+const drop = {x: canvas.width/2, y: -50, radius: 25, falling: true};
 let waveRadius = 0;
-const waveMax = 300;
+const waveMax = 250;
 let waveFinished = false;
 
+// --- Audio ---
 const oceanHum = document.getElementById('oceanHum');
 const chimes = document.getElementById('chimes');
 document.body.addEventListener('click', () => oceanHum.play());
@@ -43,7 +44,7 @@ class PerlinNoise {
 
 const perlin = new PerlinNoise();
 
-// --- Fond animé : volutes qui respirent ---
+// --- Fond animé continu ---
 function drawInkBackground(time){
     const imgData = ctx.createImageData(canvas.width, canvas.height);
     const data = imgData.data;
@@ -51,45 +52,43 @@ function drawInkBackground(time){
 
     for(let y=0; y<canvas.height; y++){
         for(let x=0; x<canvas.width; x++){
-            let nx = x*scale + time*0.02;
-            let ny = y*scale + time*0.02;
+            let nx = x*scale + time*0.05;  // vitesse plus rapide
+            let ny = y*scale + time*0.05;
 
-            // turbulence autour de la goutte même avant impact
+            // Micro-turbulence autour de la goutte
             let dx = x-drop.x, dy = y-drop.y;
             let dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < waveRadius + 100){ // zone d'influence pendant la chute
-                let effect = Math.sin((waveRadius + 100 - dist)/12)*3;
-                nx += dx*0.001*effect;
-                ny += dy*0.001*effect;
+            let effect = 0;
+            if(dist < waveRadius + 80){
+                effect = Math.sin((waveRadius + 80 - dist)/12)*2;
+                nx += dx*0.002*effect;
+                ny += dy*0.002*effect;
             }
 
-            // plusieurs volutes + mouvement aléatoire
-            let noise1 = perlin.get(nx, ny);
-            let noise2 = perlin.get(nx*1.5, ny*1.5);
-            let randomShift = Math.sin(time*0.01 + x*0.02 + y*0.02)*0.5;
-            let value = noise1 + 0.5*noise2 + randomShift;
+            // Plusieurs volutes
+            let value = perlin.get(nx, ny) + 0.5*perlin.get(nx*1.5, ny*1.5) + Math.sin(time*0.02 + x*0.03 + y*0.03)*0.5;
 
-            let c = Math.floor((value+1)*50);
+            let color = 30 + Math.floor((value+1)*50); // bleu foncé variable
             let idx = (y*canvas.width + x)*4;
             data[idx] = 0;
             data[idx+1] = 0;
-            data[idx+2] = 20 + c;
+            data[idx+2] = color;
             data[idx+3] = 200;
         }
     }
     ctx.putImageData(imgData,0,0);
 }
 
-                 
-// --- Goutte réaliste (teardrop) ---
+// --- Goutte réaliste intégrée au fond ---
 function drawDrop(){
-    const speed = 8;
+    const speed = 12; // plus rapide
     if(drop.falling){
         drop.y += speed;
+
         let grd = ctx.createRadialGradient(drop.x, drop.y, 2, drop.x, drop.y, drop.radius);
-        grd.addColorStop(0,'#A0F0FF');
-        grd.addColorStop(0.5,'#69D9FF');
-        grd.addColorStop(1,'rgba(105,217,255,0.3)');
+        grd.addColorStop(0,'rgba(70,100,150,0.9)'); // proche du fond
+        grd.addColorStop(0.6,'rgba(50,70,130,0.7)');
+        grd.addColorStop(1,'rgba(50,70,130,0.3)');
         ctx.fillStyle = grd;
 
         ctx.beginPath();
@@ -98,13 +97,9 @@ function drawDrop(){
         ctx.bezierCurveTo(drop.x - drop.radius*0.3, drop.y + drop.radius, drop.x - drop.radius*0.6, drop.y - drop.radius*0.3, drop.x, drop.y - drop.radius);
         ctx.fill();
 
-        if(drop.y >= canvas.height/2){
-            drop.falling = false;
-            waveRadius = 0;
-            chimes.play();
-        }
+        waveRadius += 4; // onde qui commence avant l'impact doucement
     } else if(!waveFinished){
-        waveRadius += 10;
+        waveRadius += 15; // propagation rapide
         ctx.strokeStyle = `rgba(142,243,255,${1-waveRadius/waveMax})`;
         ctx.lineWidth = 3;
         ctx.beginPath();
