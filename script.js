@@ -4,30 +4,19 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let time = 0;
+
+// Goutte
 const drop = {x: canvas.width/2, y: -50, radius: 20, falling: true};
 let waveRadius = 0;
 const waveMax = 300;
+let waveFinished = false; // nouveau flag pour bouton
 
+// Audio
 const oceanHum = document.getElementById('oceanHum');
 const chimes = document.getElementById('chimes');
-document.body.addEventListener('click', () => {
-    oceanHum.play();
-});
+document.body.addEventListener('click', () => oceanHum.play());
 
-// Ligne lumineuse
-function drawLine(time){
-    ctx.strokeStyle = 'rgba(142,243,255,0.7)';
-    ctx.lineWidth = 2;
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = '#8EF3FF';
-    ctx.beginPath();
-    let y = canvas.height/3 + Math.sin(time/50) * 50;
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-    ctx.stroke();
-}
-
-// Perlin Noise simple
+// Perlin Noise
 class PerlinNoise {
     constructor(){ this.gradients={}; this.memory={}; }
     rand_vect(){ let theta=Math.random()*2*Math.PI; return {x:Math.cos(theta),y:Math.sin(theta)}; }
@@ -57,29 +46,30 @@ class PerlinNoise {
 
 const perlin = new PerlinNoise();
 
-// Dessin du fond avec turbulence
+// Fond avec plusieurs volutes
 function drawInkBackground(time){
     const imgData = ctx.createImageData(canvas.width, canvas.height);
     const data = imgData.data;
-    let scale = 0.005;
+    let scale = 0.004;
 
     for(let y=0; y<canvas.height; y++){
         for(let x=0; x<canvas.width; x++){
-            let nx = x*scale + time*0.01;
-            let ny = y*scale + time*0.01;
+            let nx = x*scale + time*0.02;
+            let ny = y*scale + time*0.02;
 
             // turbulence autour de la goutte
             if(!drop.falling){
                 let dx = x-drop.x, dy = y-drop.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 if(dist < waveRadius){
-                    let effect = Math.sin((waveRadius - dist)/10)*5;
+                    let effect = Math.sin((waveRadius - dist)/8)*5;
                     nx += dx*0.001*effect;
                     ny += dy*0.001*effect;
                 }
             }
 
-            let value = perlin.get(nx, ny);
+            // plusieurs volutes
+            let value = perlin.get(nx, ny) + 0.5*perlin.get(nx*1.5, ny*1.5);
             let c = Math.floor((value+1)*50);
             let idx = (y*canvas.width + x)*4;
             data[idx] = 0;
@@ -91,10 +81,11 @@ function drawInkBackground(time){
     ctx.putImageData(imgData,0,0);
 }
 
-// Goutte et onde
+// Goutte + onde
 function drawDrop(){
+    const speed = 8; // goutte plus rapide
     if(drop.falling){
-        drop.y += 4;
+        drop.y += speed;
         ctx.fillStyle = '#69D9FF';
         ctx.beginPath();
         ctx.arc(drop.x, drop.y, drop.radius, 0, 2*Math.PI);
@@ -104,8 +95,8 @@ function drawDrop(){
             waveRadius = 0;
             chimes.play();
         }
-    } else {
-        waveRadius += 4;
+    } else if(!waveFinished){
+        waveRadius += 10; // onde plus rapide
         ctx.strokeStyle = `rgba(142,243,255,${1-waveRadius/waveMax})`;
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -113,6 +104,7 @@ function drawDrop(){
         ctx.stroke();
         if(waveRadius >= waveMax){
             document.getElementById('enterBtn').style.opacity = 1;
+            waveFinished = true; // bouton activé une fois
         }
     }
 }
@@ -121,12 +113,12 @@ function drawDrop(){
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawInkBackground(time);
-    drawLine(time);
     drawDrop();
     time++;
     requestAnimationFrame(animate);
 }
 
+// Start animation
 animate();
 
 // Resize
