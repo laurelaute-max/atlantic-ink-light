@@ -54,15 +54,13 @@ function drawInkBackground(time){
             let nx = x*scale + time*0.02;
             let ny = y*scale + time*0.02;
 
-            // turbulence autour de la goutte
-            if(!drop.falling){
-                let dx = x-drop.x, dy = y-drop.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < waveRadius){
-                    let effect = Math.sin((waveRadius - dist)/8)*5;
-                    nx += dx*0.001*effect;
-                    ny += dy*0.001*effect;
-                }
+            // turbulence autour de la goutte même avant impact
+            let dx = x-drop.x, dy = y-drop.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < waveRadius + 100){ // zone d'influence pendant la chute
+                let effect = Math.sin((waveRadius + 100 - dist)/12)*3;
+                nx += dx*0.001*effect;
+                ny += dy*0.001*effect;
             }
 
             // plusieurs volutes + mouvement aléatoire
@@ -82,6 +80,7 @@ function drawInkBackground(time){
     ctx.putImageData(imgData,0,0);
 }
 
+                 
 // --- Goutte réaliste (teardrop) ---
 function drawDrop(){
     const speed = 8;
