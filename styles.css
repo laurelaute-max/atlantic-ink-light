@@ -17,7 +17,7 @@ canvas {
 
 .text-overlay {
     position: absolute;
-    top: 40%;
+    top: 5%; /* déplacé vers le haut */
     width: 100%;
     text-align: center;
     color: white;
@@ -25,16 +25,17 @@ canvas {
 }
 
 .text-overlay h1 {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 3em;
     text-shadow: 0 0 20px #D3E8FF;
 }
 
 .text-overlay p {
     font-weight: 200;
-    font-size: 1.5em;
+    font-size: 1.2em;
     text-shadow: 0 0 10px #D3E8FF;
 }
+
 
 #enterBtn {
     position: absolute;
