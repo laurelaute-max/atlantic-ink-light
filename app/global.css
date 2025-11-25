@@ -29,7 +29,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ---------- LAYOUT GÉNÉRAL ---------- */
+/* ---------- STRUCTURE ---------- */
 
 .landing {
   position: relative;
@@ -42,7 +42,7 @@ body {
   padding: clamp(2.5rem, 6vh, 4rem) clamp(1.5rem, 4vw, 3rem);
 }
 
-/* ---------- FONDS ANIMÉS ---------- */
+/* ---------- FONDS ---------- */
 
 .bg-layer {
   position: fixed;
@@ -51,7 +51,7 @@ body {
   z-index: -3;
 }
 
-/* Image de fond */
+/* Image */
 .bg-image {
   background-image: url("/home-background.png");
   background-size: cover;
@@ -60,7 +60,7 @@ body {
   animation: slow-zoom 42s ease-in-out infinite alternate;
 }
 
-/* Voile + volutes colorées (encre) */
+/* Couleurs volutes */
 .bg-tint {
   background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
               radial-gradient(circle at 80% 85%, rgba(0, 160, 255, 0.4), transparent 60%),
@@ -76,7 +76,7 @@ body {
   animation: pulse 9s ease-in-out infinite;
 }
 
-/* Animations fond */
+/* Animations */
 @keyframes slow-zoom {
   0% { transform: scale(1.04); }
   100% { transform: scale(1.1); }
@@ -104,7 +104,7 @@ body {
 }
 
 .hero-text {
-  margin-bottom: 3.6rem; /* remet le texte plus haut, comme avant */
+  margin-bottom: 3.6rem;
 }
 
 .hero-top {
@@ -122,11 +122,10 @@ body {
   font-size: clamp(2.6rem, 5.8vw, 3.8rem);
   font-weight: 500;
   line-height: 1.1;
-  color: var(--text-main);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-/* ---------- IMPACT (GOUTTE + ONDE + LIGNES) ---------- */
+/* ---------- IMPACT ZONE ---------- */
 
 .impact-zone {
   position: relative;
@@ -145,10 +144,10 @@ body {
   box-shadow: 0 0 14px rgba(220, 240, 255, 0.9);
 }
 
-/* Ondes circulaires */
+/* Ondes (recentrées sous la goutte) */
 .ripple {
   position: absolute;
-  top: 18px; /* aligné juste sous la goutte */
+  top: 28px;
   left: 50%;
   transform: translateX(-50%);
   width: 26px;
@@ -165,14 +164,15 @@ body {
   border-color: rgba(210, 235, 255, 0.7);
 }
 
-/* Filaments / lignes de type encre dans l'eau */
+/* ---------- FILAMENTS ---------- */
+
 .filaments {
   position: absolute;
-  top: 26px;
+  top: 33px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 260px;
-  height: 110px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 280px;
+  height: 140px;
   pointer-events: none;
 }
 
@@ -181,21 +181,20 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  border-top: 2px solid rgba(235, 247, 255, 0.85);
   border-radius: 999px;
-  border-top: 1.6px solid rgba(235, 247, 255, 0.85);
-  filter: blur(0.4px);
-  opacity: 0;
   transform-origin: center;
+  opacity: 0.5;
 }
 
 .filament-1 {
-  width: 220px;
-  height: 60px;
+  width: 240px;
+  height: 70px;
 }
 
 .filament-2 {
-  width: 260px;
-  height: 80px;
+  width: 280px;
+  height: 90px;
   border-top-color: rgba(220, 240, 255, 0.7);
 }
 
@@ -211,39 +210,22 @@ body {
   font-size: 1rem;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: background-color 0.25s ease,
-              box-shadow 0.25s ease,
-              transform 0.25s ease,
-              border-color 0.25s ease;
+  transition: 0.25s ease;
 }
 
 .cta-btn:hover {
   background-color: rgba(15, 118, 178, 0.32);
   box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-  border-color: rgba(255, 255, 255, 1);
+  border-color: rgba(255,255,255,1);
   transform: translateY(-2px);
 }
 
 /* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 600px) {
-  .hero {
-    max-width: 90vw;
-  }
-
-  .hero-text {
-    margin-bottom: 3.0rem;
-  }
-
-  .hero-title {
-    font-size: clamp(2.3rem, 8vw, 3.2rem);
-  }
-
   .impact-zone {
     width: 210px;
     height: 140px;
-    margin-bottom: 2.6rem;
   }
 }
 

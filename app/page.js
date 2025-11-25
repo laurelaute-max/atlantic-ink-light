@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [showButton, setShowButton] = useState(false);
 
-  // Affichage du bouton après l'impact + propagation
+  // Affichage du bouton après l'onde + déformation des filaments
   useEffect(() => {
-    const timer = setTimeout(() => setShowButton(true), 2600);
+    const timer = setTimeout(() => setShowButton(true), 4300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -31,28 +31,29 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Goutte + onde + filaments */}
+        {/* Impact zone (goutte + onde + filaments) */}
         <div className="impact-zone">
-          {/* Goutte qui tombe doucement et se dissout */}
+          
+          {/* Goutte — chute très lente + disparition en fondu */}
           <motion.div
             className="drop"
-            initial={{ y: -140, opacity: 1 }}
+            initial={{ y: -180, opacity: 1 }}
             animate={{ y: 0, opacity: 0 }}
             transition={{
-              delay: 0.6,
-              duration: 1.7, // chute lente + fondu
+              delay: 0.4,
+              duration: 4.0,
               ease: "easeOut",
             }}
           />
 
-          {/* Ondes circulaires */}
+          {/* Ondes circulaires, centrées sous la goutte */}
           <motion.div
             className="ripple ripple-main"
             initial={{ scale: 0, opacity: 0.7 }}
-            animate={{ scale: 6, opacity: 0 }}
+            animate={{ scale: 5.8, opacity: 0 }}
             transition={{
-              delay: 1.2,
-              duration: 2.0,
+              delay: 2.2,
+              duration: 2.1,
               ease: "easeOut",
             }}
           />
@@ -62,38 +63,49 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.5 }}
             animate={{ scale: 8, opacity: 0 }}
             transition={{
-              delay: 1.3,
-              duration: 2.4,
+              delay: 2.3,
+              duration: 2.5,
               ease: "easeOut",
             }}
           />
 
-          {/* Filaments / lignes type encre dans l'eau */}
+          {/* Filaments inclinés visibles dès le début */}
           <div className="filaments">
+            
+            {/* Filament principal */}
             <motion.div
               className="filament filament-1"
-              initial={{ scaleX: 0.5, opacity: 0 }}
-              animate={{ scaleX: 1.6, opacity: [0.35, 0.2, 0] }}
+              initial={{ scaleX: 1, opacity: 0.5 }}
+              animate={{
+                scaleX: [1, 0.75, 1.15, 1],
+                opacity: [0.5, 0.7, 0.4, 0.5],
+              }}
               transition={{
-                delay: 1.25,
-                duration: 2.6,
-                ease: "easeOut",
+                delay: 2.25,
+                duration: 2.4,
+                ease: "easeInOut",
               }}
             />
+
+            {/* Filament secondaire */}
             <motion.div
               className="filament filament-2"
-              initial={{ scaleX: 0.6, opacity: 0 }}
-              animate={{ scaleX: 1.8, opacity: [0.3, 0.18, 0] }}
+              initial={{ scaleX: 1, opacity: 0.4 }}
+              animate={{
+                scaleX: [1, 0.65, 1.2, 1],
+                opacity: [0.4, 0.6, 0.35, 0.4],
+              }}
               transition={{
-                delay: 1.4,
-                duration: 3.0,
-                ease: "easeOut",
+                delay: 2.35,
+                duration: 2.7,
+                ease: "easeInOut",
               }}
             />
           </div>
+
         </div>
 
-        {/* Bouton qui apparaît après l'onde */}
+        {/* Bouton */}
         {showButton && (
           <motion.button
             className="cta-btn"
@@ -101,14 +113,15 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             onClick={() => {
-              // À remplacer plus tard par ta vraie page carte
               window.location.href = "/map";
             }}
           >
             Entrer dans l’océan
           </motion.button>
         )}
+
       </section>
     </main>
   );
 }
+
