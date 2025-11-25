@@ -20,11 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Play audio + trigger drop on first user interaction (gesture required by browsers)
   const startOnce = async () => {
     document.removeEventListener('pointerdown', startOnce);
-    try {
-      await app.playAudio(); // resume audio contexts + play loops
-    } catch(e){
-      console.warn('audio start blocked', e);
-    }
     dropController.launch(); // launch simulated drop once
   };
   document.addEventListener('pointerdown', startOnce);
