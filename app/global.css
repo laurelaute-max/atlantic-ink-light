@@ -29,7 +29,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ---------- STRUCTURE ---------- */
+/* ---------- LAYOUT GÉNÉRAL ---------- */
 
 .landing {
   position: relative;
@@ -39,6 +39,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: clamp(2.5rem, 6vh, 4rem) clamp(1.5rem, 4vw, 3rem);
 }
 
 /* ---------- FONDS ANIMÉS ---------- */
@@ -55,29 +56,30 @@ body {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.65) contrast(1.15) saturate(1.2);
+  filter: brightness(0.65) contrast(1.2) saturate(1.2);
   animation: slow-zoom 42s ease-in-out infinite alternate;
 }
 
-/* Volutes bleues visibles */
+/* Voile + volutes colorées (encre) */
 .bg-tint {
-  background: radial-gradient(circle at 30% 20%, rgba(30, 120, 255, 0.45), transparent 55%),
-              radial-gradient(circle at 80% 80%, rgba(0, 150, 255, 0.35), transparent 60%),
-              radial-gradient(circle at 50% 65%, rgba(0, 10, 45, 0.8), #000814 70%);
+  background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
+              radial-gradient(circle at 80% 85%, rgba(0, 160, 255, 0.4), transparent 60%),
+              radial-gradient(circle at 50% 60%, rgba(0, 10, 40, 0.85), #000814 75%);
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.6;
   animation: drift 22s ease-in-out infinite alternate;
 }
 
 /* Halo respirant */
 .bg-glow {
-  background: radial-gradient(circle at 50% 65%, rgba(0, 195, 255, 0.25), transparent 70%);
+  background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.26), transparent 70%);
   animation: pulse 9s ease-in-out infinite;
 }
 
+/* Animations fond */
 @keyframes slow-zoom {
   0% { transform: scale(1.04); }
-  100% { transform: scale(1.12); }
+  100% { transform: scale(1.1); }
 }
 
 @keyframes drift {
@@ -86,15 +88,23 @@ body {
 }
 
 @keyframes pulse {
-  0%,100% { opacity: 0.35; }
-  50%    { opacity: 0.6; }
+  0%,100% { opacity: 0.38; }
+  50%    { opacity: 0.65; }
 }
 
 /* ---------- TEXTE ---------- */
 
 .hero {
-  text-align: center;
   position: relative;
+  max-width: 520px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-text {
+  margin-bottom: 3.6rem; /* remet le texte plus haut, comme avant */
 }
 
 .hero-top {
@@ -104,65 +114,96 @@ body {
   font-size: 0.78rem;
   opacity: 0.8;
   margin-bottom: 1.8rem;
+  color: rgba(231, 235, 245, 0.88);
 }
 
 .hero-title {
   font-family: "Playfair Display", serif;
-  font-size: clamp(2.6rem, 6vw, 3.8rem);
+  font-size: clamp(2.6rem, 5.8vw, 3.8rem);
   font-weight: 500;
   line-height: 1.1;
   color: var(--text-main);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-/* ---------- IMPACT (GOUTTE + ONDE) ---------- */
+/* ---------- IMPACT (GOUTTE + ONDE + LIGNES) ---------- */
 
-/* Onde centrée EXACTEMENT au milieu de la page */
 .impact-zone {
-  position: absolute;
-  top: 58%; /* <-- Ajuste ici pour placer l’onde exactement sous le "p" */
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 240px;
-  height: 160px;
+  position: relative;
+  width: 230px;
+  height: 150px;
+  margin: 0 auto 3.1rem auto;
 }
 
 /* Goutte */
 .drop {
   width: 14px;
   height: 14px;
-  background: radial-gradient(circle at 30% 20%, #ffffff, #7dd3fc);
+  background: radial-gradient(circle at 30% 20%, #ffffff, #a5e3ff);
   border-radius: 50%;
   margin: 0 auto;
-  box-shadow: 0 0 14px rgba(125, 211, 252, 0.85);
+  box-shadow: 0 0 14px rgba(220, 240, 255, 0.9);
 }
 
-/* Ondes */
+/* Ondes circulaires */
 .ripple {
   position: absolute;
-  top: 14px; /* alignée avec le bas de la goutte */
+  top: 18px; /* aligné juste sous la goutte */
   left: 50%;
   transform: translateX(-50%);
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1.5px solid rgba(179, 221, 255, 0.7);
+  border: 1.6px solid rgba(230, 245, 255, 0.9);
 }
 
 .ripple-main {
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 24px rgba(220, 245, 255, 0.7);
 }
 
 .ripple-secondary {
-  border-color: rgba(148, 197, 255, 0.35);
+  border-color: rgba(210, 235, 255, 0.7);
+}
+
+/* Filaments / lignes de type encre dans l'eau */
+.filaments {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 110px;
+  pointer-events: none;
+}
+
+.filament {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  border-top: 1.6px solid rgba(235, 247, 255, 0.85);
+  filter: blur(0.4px);
+  opacity: 0;
+  transform-origin: center;
+}
+
+.filament-1 {
+  width: 220px;
+  height: 60px;
+}
+
+.filament-2 {
+  width: 260px;
+  height: 80px;
+  border-top-color: rgba(220, 240, 255, 0.7);
 }
 
 /* ---------- BOUTON ---------- */
 
 .cta-btn {
-  margin-top: 3rem;
   padding: 0.9rem 2.6rem;
-  border-radius: 50px;
+  border-radius: 999px;
   background: transparent;
   border: 1.5px solid rgba(244, 250, 255, 0.9);
   color: var(--text-main);
@@ -170,25 +211,39 @@ body {
   font-size: 1rem;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  transition: 0.25s ease;
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.25s ease,
+              box-shadow 0.25s ease,
+              transform 0.25s ease,
+              border-color 0.25s ease;
 }
 
 .cta-btn:hover {
   background-color: rgba(15, 118, 178, 0.32);
   box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-  border-color: rgba(255,255,255,1);
+  border-color: rgba(255, 255, 255, 1);
   transform: translateY(-2px);
 }
 
 /* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 600px) {
+  .hero {
+    max-width: 90vw;
+  }
+
+  .hero-text {
+    margin-bottom: 3.0rem;
+  }
+
   .hero-title {
     font-size: clamp(2.3rem, 8vw, 3.2rem);
   }
 
   .impact-zone {
-    top: 60%;
+    width: 210px;
+    height: 140px;
+    margin-bottom: 2.6rem;
   }
 }
 
