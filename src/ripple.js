@@ -1,7 +1,7 @@
 // src/ripple.js
 import {fragmentShader, vertexShader, createUniforms} from './shaders.js';
 
-import * as THREE from "three";
+const THREE = window.THREE
 
 export function createRippleSystem(api = {}) {
 
