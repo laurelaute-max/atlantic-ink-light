@@ -1,5 +1,5 @@
 // src/main.js
-import {createScene} from './ripple.js';
+import {createRippleSystem as createScene} from './ripple.js';
 import {initDrop} from './drop.js';
 
 let app = {};
