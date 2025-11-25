@@ -35,9 +35,13 @@ export default function Home() {
           {/* Goutte qui tombe */}
           <motion.div
             className="drop"
-            initial={{ y: -90, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.9, ease: "easeOut" }}
+            initial={{ y: -90, opacity: 1 }}
+            animate={{ y: 0, opacity: 0 }}
+            transition={{
+              delay: 0.6,
+              duration: 1.3,
+              ease: "easeOut",
+              }}
           />
 
           {/* Onde principale */}

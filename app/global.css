@@ -55,25 +55,29 @@ body {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.7) contrast(1.05);
-  transform-origin: center;
-  animation: slow-zoom 36s ease-in-out infinite alternate;
+  filter: brightness(0.65) contrast(1.15) saturate(1.2);
+  animation: slow-zoom 42s ease-in-out infinite alternate;
 }
+
 
 /* Voile bleu et légères volutes */
 .bg-tint {
-  background: radial-gradient(circle at 20% 0%, rgba(54, 103, 190, 0.3), transparent 55%),
-    radial-gradient(circle at 80% 100%, rgba(0, 165, 236, 0.35), transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(3, 18, 48, 0.8), #000814 80%);
-  mix-blend-mode: soft-light;
-  animation: drift 28s ease-in-out infinite alternate;
+  background: radial-gradient(circle at 30% 20%, rgba(30, 120, 255, 0.45), transparent 55%),
+              radial-gradient(circle at 80% 80%, rgba(0, 150, 255, 0.35), transparent 60%),
+              radial-gradient(circle at 50% 50%, rgba(0, 15, 45, 0.85), #000814 80%);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  animation: drift 22s ease-in-out infinite alternate;
 }
+
 
 /* Halo respirant */
 .bg-glow {
-  background: radial-gradient(circle at 50% 60%, rgba(0, 200, 255, 0.18), transparent 60%);
-  animation: pulse 10s ease-in-out infinite;
+  background: radial-gradient(circle at 50% 65%, rgba(0, 195, 255, 0.25), transparent 70%);
+  animation: pulse 9s ease-in-out infinite;
 }
+
+
 
 /* Animations fond */
 @keyframes slow-zoom {
@@ -150,25 +154,29 @@ body {
 }
 
 /* goutte */
-.drop {
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 20%, #ffffff, #7dd3fc);
-  box-shadow: 0 0 14px rgba(125, 211, 252, 0.85);
+.drop-zone {
+  position: relative;
+  width: 200px;
+  height: 150px;
+  margin: 0 auto 2.6rem auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
+
 
 /* ondes circulaires */
 .ripple {
   position: absolute;
-  top: 45%;
+  top: 14px; /* hauteur exacte de la goutte */
   left: 50%;
   width: 26px;
   height: 26px;
   border-radius: 999px;
   border: 1.5px solid rgba(179, 221, 255, 0.7);
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
 }
+
 
 .ripple-main {
   box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
