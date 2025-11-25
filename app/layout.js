@@ -1,8 +1,8 @@
-import './global.css';
+import "./global.css";
 
 export const metadata = {
-  title: 'Ocean Project',
-  description: 'Exploration interactive de l’océan Atlantique',
+  title: "Atlantic Pulse",
+  description: "Exploration de l’océan Atlantique",
 };
 
 export default function RootLayout({ children }) {
@@ -12,3 +12,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
