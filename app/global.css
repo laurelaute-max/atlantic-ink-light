@@ -1,4 +1,5 @@
-/* Fullscreen layout */
+/* === GLOBAL LANDING PAGE STYLES === */
+
 .landing-container {
   position: relative;
   width: 100vw;
@@ -11,35 +12,47 @@
   font-family: "Georgia", serif;
 }
 
-/* Oceanic moving gradient */
+/* Ocean breathing gradient */
 .ocean-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 40%, #0a1c2d, #000814 80%);
+  background: radial-gradient(circle at 30% 40%, #0a1c2d, #001224 80%);
   animation: drift 12s ease-in-out infinite alternate;
-  filter: blur(20px);
+  filter: blur(30px);
   z-index: -1;
 }
 
+/* breathing-like animation */
 @keyframes drift {
-  0% { transform: scale(1.1) translate(0, -20px); }
-  100% { transform: scale(1.3) translate(0, 20px); }
+  0% {
+    transform: scale(1.05) translate(-10px, -25px);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    transform: scale(1.1) translate(10px, 10px);
+    filter: hue-rotate(10deg) brightness(1.1);
+  }
+  100% {
+    transform: scale(1.15) translate(0, 20px);
+    filter: hue-rotate(0deg) brightness(1);
+  }
 }
 
-/* Drop */
+/* Falling drop */
 .drop {
   width: 14px;
   height: 14px;
   background: #dce7ff;
   border-radius: 50%;
-  box-shadow: 0 0 10px #ffffffaa;
+  box-shadow: 0 0 12px #ffffffaa;
+  margin-bottom: 100px;
 }
 
-/* Ripple */
+/* Ripple effect */
 .ripple {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border: 2px solid #4cc9ff;
   border-radius: 50%;
   pointer-events: none;
@@ -47,35 +60,35 @@
   transform: translateY(-50%);
 }
 
-/* Typography */
+/* Title block */
 .title-block {
-  margin-top: 60px;
+  margin-top: 80px;
   text-align: center;
 }
 
 .title {
   color: #f3f6ff;
-  font-size: 3rem;
+  font-size: 3.2rem;
   font-weight: 300;
   letter-spacing: 1px;
 }
 
 /* Button */
 .enter-button {
-  margin-top: 60px;
-  padding: 14px 28px;
+  margin-top: 70px;
+  padding: 14px 32px;
   background: transparent;
   border: 1px solid #ffffffbb;
   color: #ffffff;
-  border-radius: 30px;
-  font-size: 1.1rem;
-  backdrop-filter: blur(6px);
+  border-radius: 40px;
+  font-size: 1.15rem;
+  backdrop-filter: blur(8px);
   cursor: pointer;
   transition: 0.3s ease;
 }
 
 .enter-button:hover {
   background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 12px #4cc9ff88;
+  box-shadow: 0 0 14px #4cc9ff88;
 }
 
