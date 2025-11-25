@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [showButton, setShowButton] = useState(false);
 
-  // Affichage du bouton après l'onde + déformation des filaments
+  // Affichage du bouton après la chute, l'onde et le mouvement d'encre
   useEffect(() => {
-    const timer = setTimeout(() => setShowButton(true), 4300);
+    const timer = setTimeout(() => setShowButton(true), 12000); // ~12 s
     return () => clearTimeout(timer);
   }, []);
 
@@ -17,6 +17,7 @@ export default function Home() {
       {/* Fonds animés */}
       <div className="bg-layer bg-image" />
       <div className="bg-layer bg-tint" />
+      <div className="bg-layer bg-ink" />
       <div className="bg-layer bg-glow" />
 
       <section className="hero">
@@ -31,29 +32,28 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Impact zone (goutte + onde + filaments) */}
+        {/* Goutte + onde */}
         <div className="impact-zone">
-          
           {/* Goutte — chute très lente + disparition en fondu */}
           <motion.div
             className="drop"
-            initial={{ y: -180, opacity: 1 }}
+            initial={{ y: -200, opacity: 1 }}
             animate={{ y: 0, opacity: 0 }}
             transition={{
-              delay: 0.4,
-              duration: 4.0,
+              delay: 0.5,
+              duration: 10.0, // chute lente (~10 s)
               ease: "easeOut",
             }}
           />
 
-          {/* Ondes circulaires, centrées sous la goutte */}
+          {/* Ondes circulaires, centrées sur le point d'impact */}
           <motion.div
             className="ripple ripple-main"
             initial={{ scale: 0, opacity: 0.7 }}
-            animate={{ scale: 5.8, opacity: 0 }}
+            animate={{ scale: 6, opacity: 0 }}
             transition={{
-              delay: 2.2,
-              duration: 2.1,
+              delay: 8.5, // commence vers la fin de la chute
+              duration: 2.5,
               ease: "easeOut",
             }}
           />
@@ -61,48 +61,13 @@ export default function Home() {
           <motion.div
             className="ripple ripple-secondary"
             initial={{ scale: 0, opacity: 0.5 }}
-            animate={{ scale: 8, opacity: 0 }}
+            animate={{ scale: 8.5, opacity: 0 }}
             transition={{
-              delay: 2.3,
-              duration: 2.5,
+              delay: 8.7,
+              duration: 3.0,
               ease: "easeOut",
             }}
           />
-
-          {/* Filaments inclinés visibles dès le début */}
-          <div className="filaments">
-            
-            {/* Filament principal */}
-            <motion.div
-              className="filament filament-1"
-              initial={{ scaleX: 1, opacity: 0.5 }}
-              animate={{
-                scaleX: [1, 0.75, 1.15, 1],
-                opacity: [0.5, 0.7, 0.4, 0.5],
-              }}
-              transition={{
-                delay: 2.25,
-                duration: 2.4,
-                ease: "easeInOut",
-              }}
-            />
-
-            {/* Filament secondaire */}
-            <motion.div
-              className="filament filament-2"
-              initial={{ scaleX: 1, opacity: 0.4 }}
-              animate={{
-                scaleX: [1, 0.65, 1.2, 1],
-                opacity: [0.4, 0.6, 0.35, 0.4],
-              }}
-              transition={{
-                delay: 2.35,
-                duration: 2.7,
-                ease: "easeInOut",
-              }}
-            />
-          </div>
-
         </div>
 
         {/* Bouton */}
@@ -113,13 +78,12 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             onClick={() => {
-              window.location.href = "/map";
+              window.location.href = "/map"; // à remplacer plus tard
             }}
           >
             Entrer dans l’océan
           </motion.button>
         )}
-
       </section>
     </main>
   );

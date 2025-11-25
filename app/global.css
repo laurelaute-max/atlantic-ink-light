@@ -60,7 +60,7 @@ body {
   animation: slow-zoom 42s ease-in-out infinite alternate;
 }
 
-/* Couleurs volutes */
+/* Couleurs volutes globales */
 .bg-tint {
   background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
               radial-gradient(circle at 80% 85%, rgba(0, 160, 255, 0.4), transparent 60%),
@@ -70,13 +70,29 @@ body {
   animation: drift 22s ease-in-out infinite alternate;
 }
 
+/* Courant d'encre dense (passe sous le texte) */
+.bg-ink {
+  z-index: -2;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(230, 245, 255, 0.03) 0px,
+    rgba(230, 245, 255, 0.08) 40px,
+    rgba(180, 215, 255, 0.22) 80px,
+    rgba(230, 245, 255, 0.0) 120px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  filter: blur(14px);
+  animation: ink-flow 30s linear infinite;
+}
+
 /* Halo respirant */
 .bg-glow {
   background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.26), transparent 70%);
   animation: pulse 9s ease-in-out infinite;
 }
 
-/* Animations */
+/* Animations fond */
 @keyframes slow-zoom {
   0% { transform: scale(1.04); }
   100% { transform: scale(1.1); }
@@ -90,6 +106,18 @@ body {
 @keyframes pulse {
   0%,100% { opacity: 0.38; }
   50%    { opacity: 0.65; }
+}
+
+@keyframes ink-flow {
+  0% {
+    transform: translate3d(-60px, 0, 0);
+  }
+  50% {
+    transform: translate3d(40px, -10px, 0);
+  }
+  100% {
+    transform: translate3d(80px, 5px, 0);
+  }
 }
 
 /* ---------- TEXTE ---------- */
@@ -122,6 +150,7 @@ body {
   font-size: clamp(2.6rem, 5.8vw, 3.8rem);
   font-weight: 500;
   line-height: 1.1;
+  color: var(--text-main);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
@@ -144,12 +173,12 @@ body {
   box-shadow: 0 0 14px rgba(220, 240, 255, 0.9);
 }
 
-/* Ondes (recentrées sous la goutte) */
+/* Ondes — centrées exactement autour du point d'impact */
 .ripple {
   position: absolute;
-  top: 28px;
+  top: 14px; /* centre vertical à la jonction sous la goutte */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -164,40 +193,6 @@ body {
   border-color: rgba(210, 235, 255, 0.7);
 }
 
-/* ---------- FILAMENTS ---------- */
-
-.filaments {
-  position: absolute;
-  top: 33px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 280px;
-  height: 140px;
-  pointer-events: none;
-}
-
-.filament {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border-top: 2px solid rgba(235, 247, 255, 0.85);
-  border-radius: 999px;
-  transform-origin: center;
-  opacity: 0.5;
-}
-
-.filament-1 {
-  width: 240px;
-  height: 70px;
-}
-
-.filament-2 {
-  width: 280px;
-  height: 90px;
-  border-top-color: rgba(220, 240, 255, 0.7);
-}
-
 /* ---------- BOUTON ---------- */
 
 .cta-btn {
@@ -210,22 +205,39 @@ body {
   font-size: 1rem;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  transition: 0.25s ease;
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.25s ease,
+              box-shadow 0.25s ease,
+              transform 0.25s ease,
+              border-color 0.25s ease;
 }
 
 .cta-btn:hover {
   background-color: rgba(15, 118, 178, 0.32);
   box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-  border-color: rgba(255,255,255,1);
+  border-color: rgba(255, 255, 255, 1);
   transform: translateY(-2px);
 }
 
 /* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 600px) {
+  .hero {
+    max-width: 90vw;
+  }
+
+  .hero-text {
+    margin-bottom: 3rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.3rem, 8vw, 3.2rem);
+  }
+
   .impact-zone {
     width: 210px;
     height: 140px;
+    margin-bottom: 2.6rem;
   }
 }
 
