@@ -7,7 +7,7 @@ export default function Home() {
   
   // Lecture du son d'ambiance
   useEffect(() => {
-    const audio = new Audio("/assets/mixkit-wind-cold-interior-1172.wav");
+    const audio = new Audio("/public/assets/mixkit-wind-cold-interior-1172.wav");
     audio.volume = 0.15;
     audio.loop = true;
     audio.play().catch(() => {});
