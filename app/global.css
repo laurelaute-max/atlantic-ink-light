@@ -1,26 +1,81 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #020b23; /* bleu nuit */
-  color: white;
-  font-family: 'Inter', sans-serif;
+/* Fullscreen layout */
+.landing-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Georgia", serif;
 }
 
-/* Ligne ondulée animée */
-.wavy-line {
+/* Oceanic moving gradient */
+.ocean-bg {
   position: absolute;
-  top: 40%;
-  width: 100%;
-  height: 120px;
-  overflow: hidden;
+  inset: 0;
+  background: radial-gradient(circle at 30% 40%, #0a1c2d, #000814 80%);
+  animation: drift 12s ease-in-out infinite alternate;
+  filter: blur(20px);
+  z-index: -1;
 }
 
-.wavy-line svg {
-  width: 100%;
-  height: 100%;
+@keyframes drift {
+  0% { transform: scale(1.1) translate(0, -20px); }
+  100% { transform: scale(1.3) translate(0, 20px); }
 }
 
-.glow {
-  filter: drop-shadow(0px 0px 6px #4cc9ff);
+/* Drop */
+.drop {
+  width: 14px;
+  height: 14px;
+  background: #dce7ff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffffffaa;
 }
+
+/* Ripple */
+.ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #4cc9ff;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Typography */
+.title-block {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.title {
+  color: #f3f6ff;
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+/* Button */
+.enter-button {
+  margin-top: 60px;
+  padding: 14px 28px;
+  background: transparent;
+  border: 1px solid #ffffffbb;
+  color: #ffffff;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.enter-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 12px #4cc9ff88;
+}
+
