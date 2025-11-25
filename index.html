@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ATLANTIC PULSE</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atlantic Pulse – L’océan respire</title>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+
+    <!-- GSAP pour animations du DOM -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
 </head>
 <body>
-<canvas id="inkCanvas"></canvas>
 
-<div class="text-overlay">
-    <h1>ATLANTIC PULSE</h1>
-    <p>Un océan, des mouvements, des pulsations.</p>
-</div>
+    <div id="overlay">
+        <h1 class="title">L’océan<br>respire</h1>
 
-<button id="enterBtn">Explorer l’océan</button>
+        <button id="enterButton">Entrer dans l’océan</button>
+    </div>
 
-<audio id="oceanHum" src="assets/ocean-hum.wav" loop></audio>
-<audio id="chimes" src="assets/hydrophone-chimes.wav"></audio>
+    <audio id="bg-audio" loop>
+        <source src="./assets/audio/ocean-lowrumble.mp3" type="audio/mpeg" />
+    </audio>
 
-<script src="script.js"></script>
+    <audio id="hydrophone-audio" loop>
+        <source src="./assets/audio/hydrophone-chimes.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script type="module" src="./src/main.js"></script>
 </body>
 </html>
