@@ -1,141 +1,133 @@
 // src/ripple.js
 import {fragmentShader, vertexShader, createUniforms} from './shaders.js';
 
-export function createScene({container}) {
-  const THREE = window.THREE;
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-  const renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  container.appendChild(renderer.domElement);
+import * as THREE from "three";
 
-  // Uniforms (incl. ripple state, time, resolution)
-  const uniforms = createUniforms();
-  const material = new THREE.ShaderMaterial({
-    fragmentShader,
-    vertexShader,
-    uniforms,
-  });
+export function createRippleSystem(api = {}) {
 
-    // ensure uniforms for six ripples exist on the material
-  const maxRipples = 6;
-  function syncRipplesToMaterial(){
-    // prepare plain arrays
-    const ripArr = uniforms.u_ripples.value || [];
-    for(let i=0;i<maxRipples;i++){
-      const r = ripArr[i] || new THREE.Vector4(0,0,-10,0);
-      // flatten into shader uniforms named u_ripple0..u_ripple5
-      material.uniforms['u_ripple' + i] = { value: r };
-    }
-  }
-  syncRipplesToMaterial();
+  /*------------------------------------------------------
+   * CONFIG
+   *-----------------------------------------------------*/
+  const maxRipples = 6;        // Number of ripples handled by shader
+  const defaultDecay = 0.5;
+  const defaultRadius = 0.04;
+  const rippleZones = [];
 
-  // override addRippleAt to update material uniforms when pushed
-  const originalAddRippleAt = app && app.addRippleAt;
-  // We'll replace the local addRippleAt defined earlier with a version that updates shader uniforms:
-  function addRippleAt(ndcX, ndcY, strength=1.0) {
-    const uvx = 0.5 + ndcX * 0.5;
-    const uvy = 0.5 + ndcY * 0.5;
-    uniforms.u_ripples.value.push(new THREE.Vector4(uvx, uvy, 0.02 * 2.0, strength));
-    if (uniforms.u_ripples.value.length > maxRipples) uniforms.u_ripples.value.shift();
-    // update shader uniforms
-    for(let i=0;i<maxRipples;i++){
-      const v = uniforms.u_ripples.value[i] || new THREE.Vector4(0,0,-10,0);
-      material.uniforms['u_ripple' + i].value = v;
-    }
-    uniforms._lastRippleTime = performance.now() * 0.001;
-  }
+  /*------------------------------------------------------
+   * INTERNAL UNIFORMS
+   *-----------------------------------------------------*/
+  const uniforms = {
+    u_ripples:   { value: [] },
+    u_rippleDecay: { value: defaultDecay },
+    u_rippleRadius: { value: defaultRadius },
+    u_time: { value: 0 },
 
-  // replace exported addRippleAt in returned API
-  api.addRippleAt = addRippleAt;
-
-
-  const plane = new THREE.Mesh(new THREE.PlaneGeometry(2,2), material);
-  scene.add(plane);
-
-  // audio handling (simple)
-  let audioCtx, bgGain, hydroGain, bgAudioEl, hydroAudioEl;
-  async function setupAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    bgAudioEl = document.getElementById('bg-audio');
-    hydroAudioEl = document.getElementById('hydrophone-audio');
-
-    // create media elements and connect to audio context
-    const bgSrc = audioCtx.createMediaElementSource(bgAudioEl);
-    const hydroSrc = audioCtx.createMediaElementSource(hydroAudioEl);
-
-    bgGain = audioCtx.createGain();
-    hydroGain = audioCtx.createGain();
-
-    // subtle mix
-    bgGain.gain.value = 0.7;
-    hydroGain.gain.value = 0.3;
-
-    bgSrc.connect(bgGain).connect(audioCtx.destination);
-    hydroSrc.connect(hydroGain).connect(audioCtx.destination);
-
-    // resume context & play
-    await audioCtx.resume();
-    await bgAudioEl.play().catch(()=>{});
-    await hydroAudioEl.play().catch(()=>{});
-  }
-
-  // Function to resume/play audio from outside
-  async function playAudio() {
-    await setupAudio();
-  }
-
-  // animation loop
-  let start = performance.now();
-  function render(time) {
-    const t = (time - start) * 0.001;
-    uniforms.u_time.value = t;
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-
-  // resize handling
-  function onResize(){
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
-  }
-  window.addEventListener('resize', onResize, {passive:true});
-  onResize();
-
-  // ripple trigger API: push an impact at normalized device coords [-1..1]
-  function addRippleAt(ndcX, ndcY, strength=1.0) {
-    // convert NDC to uv [0..1]
-    const uvx = 0.5 + ndcX * 0.5;
-    const uvy = 0.5 + ndcY * 0.5;
-    uniforms.u_ripples.value.push(new THREE.Vector4(uvx, uvy, 0.0, strength));
-    // limit array length
-    if (uniforms.u_ripples.value.length > 8) uniforms.u_ripples.value.shift();
-    // update a lastRippleTime to detect reveal
-    uniforms._lastRippleTime = performance.now() * 0.001;
-  }
-
-  // Expose API
-  const api = {
-    renderer, scene, camera, material, uniforms,
-    playAudio,
-    addRippleAt,
-    onRippleReveal: null,
+    // Shader expects these 6 slots:
+    u_ripple0: { value: new THREE.Vector4(0,0,-10,0) },
+    u_ripple1: { value: new THREE.Vector4(0,0,-10,0) },
+    u_ripple2: { value: new THREE.Vector4(0,0,-10,0) },
+    u_ripple3: { value: new THREE.Vector4(0,0,-10,0) },
+    u_ripple4: { value: new THREE.Vector4(0,0,-10,0) },
+    u_ripple5: { value: new THREE.Vector4(0,0,-10,0) },
   };
 
-  // watch for ripple radius in shader by polling a uniform value
-  // We'll approximate reveal by timing: when a ripple was triggered, reveal after 1.0s
-  setInterval(()=>{
-    if (uniforms._lastRippleTime) {
-      const elapsed = performance.now() * 0.001 - uniforms._lastRippleTime;
-      if (elapsed > 0.9 && api.onRippleReveal) {
-        api.onRippleReveal();
-        api.onRippleReveal = null; // call once
+  /*------------------------------------------------------
+   * MATERIAL (shader)
+   *-----------------------------------------------------*/
+  const material = new THREE.ShaderMaterial({
+    uniforms,
+    vertexShader: /* glsl */`
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
       }
+    `,
+    fragmentShader: /* glsl */`
+      uniform float u_time;
+      uniform float u_rippleDecay;
+      uniform float u_rippleRadius;
+
+      uniform vec4 u_ripple0;
+      uniform vec4 u_ripple1;
+      uniform vec4 u_ripple2;
+      uniform vec4 u_ripple3;
+      uniform vec4 u_ripple4;
+      uniform vec4 u_ripple5;
+
+      varying vec2 vUv;
+
+      float ripple(vec2 uv, vec4 r) {
+        if (r.z < 0.0) return 0.0;
+        float d = distance(uv, r.xy);
+        float amp = sin( (d - r.z) * 40.0 ) * r.w;
+        amp *= exp(-d / u_rippleDecay);
+        return amp;
+      }
+
+      void main() {
+        float f = 0.0;
+        f += ripple(vUv, u_ripple0);
+        f += ripple(vUv, u_ripple1);
+        f += ripple(vUv, u_ripple2);
+        f += ripple(vUv, u_ripple3);
+        f += ripple(vUv, u_ripple4);
+        f += ripple(vUv, u_ripple5);
+
+        vec3 c = vec3(0.03 + f * 0.2);
+        gl_FragColor = vec4(c,1.0);
+      }
+    `,
+  });
+
+  /*------------------------------------------------------
+   * RIPPLE CREATION (FINAL UNIFIED VERSION)
+   *-----------------------------------------------------*/
+  function addRippleAt(ndcX, ndcY, strength = 1.0) {
+    const uvx = 0.5 + ndcX * 0.5;
+    const uvy = 0.5 + ndcY * 0.5;
+
+    // store ripple in list
+    uniforms.u_ripples.value.push(
+      new THREE.Vector4(uvx, uvy, 0.0, strength)
+    );
+
+    if (uniforms.u_ripples.value.length > maxRipples) {
+      uniforms.u_ripples.value.shift();
     }
-  }, 200);
+
+    // push to shader slots
+    for (let i = 0; i < maxRipples; i++) {
+      const r = uniforms.u_ripples.value[i] || new THREE.Vector4(0,0,-10,0);
+      material.uniforms[`u_ripple${i}`].value = r;
+    }
+  }
+
+  /*------------------------------------------------------
+   * EXTERNAL TRIGGER HELPERS
+   *-----------------------------------------------------*/
+  function addRippleZone(x1, y1, x2, y2) {
+    rippleZones.push({ x1, y1, x2, y2 });
+  }
+
+  function addRippleRandomInZones(strength = 1.0) {
+    if (rippleZones.length === 0) return;
+    const z = rippleZones[Math.floor(Math.random() * rippleZones.length)];
+
+    const x = Math.random() * (z.x2 - z.x1) + z.x1;
+    const y = Math.random() * (z.y2 - z.y1) + z.y1;
+
+    addRippleAt(x, y, strength);
+  }
+
+  /*------------------------------------------------------
+   * MAIN API
+   *-----------------------------------------------------*/
+  api.material = material;
+  api.uniforms = uniforms;
+  api.addRippleAt = addRippleAt;
+  api.addRippleZone = addRippleZone;
+  api.addRippleRandomInZones = addRippleRandomInZones;
 
   return api;
 }
