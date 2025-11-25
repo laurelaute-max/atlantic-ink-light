@@ -18,6 +18,39 @@ export function createScene({container}) {
     uniforms,
   });
 
+    // ensure uniforms for six ripples exist on the material
+  const maxRipples = 6;
+  function syncRipplesToMaterial(){
+    // prepare plain arrays
+    const ripArr = uniforms.u_ripples.value || [];
+    for(let i=0;i<maxRipples;i++){
+      const r = ripArr[i] || new THREE.Vector4(0,0,-10,0);
+      // flatten into shader uniforms named u_ripple0..u_ripple5
+      material.uniforms['u_ripple' + i] = { value: r };
+    }
+  }
+  syncRipplesToMaterial();
+
+  // override addRippleAt to update material uniforms when pushed
+  const originalAddRippleAt = app && app.addRippleAt;
+  // We'll replace the local addRippleAt defined earlier with a version that updates shader uniforms:
+  function addRippleAt(ndcX, ndcY, strength=1.0) {
+    const uvx = 0.5 + ndcX * 0.5;
+    const uvy = 0.5 + ndcY * 0.5;
+    uniforms.u_ripples.value.push(new THREE.Vector4(uvx, uvy, 0.02 * 2.0, strength));
+    if (uniforms.u_ripples.value.length > maxRipples) uniforms.u_ripples.value.shift();
+    // update shader uniforms
+    for(let i=0;i<maxRipples;i++){
+      const v = uniforms.u_ripples.value[i] || new THREE.Vector4(0,0,-10,0);
+      material.uniforms['u_ripple' + i].value = v;
+    }
+    uniforms._lastRippleTime = performance.now() * 0.001;
+  }
+
+  // replace exported addRippleAt in returned API
+  api.addRippleAt = addRippleAt;
+
+
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(2,2), material);
   scene.add(plane);
 
