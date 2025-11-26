@@ -65,7 +65,8 @@ body {
   opacity: 0.5;
 }
 
-/* Flux d'encre unique, oblique, avec filaments multiples */
+/* ---------- FLUX D'ENCRE : ruban unique, oblique, filamenteux ---------- */
+
 .bg-ink {
   z-index: -2;
   overflow: hidden;
@@ -75,40 +76,40 @@ body {
   content: "";
   position: absolute;
   width: 180%;
-  height: 70%;
+  height: 40%;          /* E1 : ruban relativement fin */
   left: -40%;
-  bottom: -10%;
+  bottom: -5%;
   /* gros ruban oblique bas-gauche -> haut-droit */
   background-image:
     linear-gradient(
       90deg,
       rgba(2, 10, 35, 0.0) 0%,
-      rgba(6, 32, 80, 0.8) 15%,
-      rgba(10, 54, 120, 0.9) 30%,
-      rgba(24, 91, 160, 0.85) 45%,
-      rgba(56, 189, 248, 0.8) 60%,
-      rgba(240, 250, 255, 0.65) 75%,
-      rgba(56, 189, 248, 0.6) 85%,
+      rgba(6, 32, 80, 0.85) 10%,
+      rgba(10, 54, 120, 0.9) 25%,
+      rgba(24, 91, 160, 0.9) 40%,
+      rgba(56, 189, 248, 0.85) 60%,
+      rgba(240, 250, 255, 0.7) 75%,
+      rgba(56, 189, 248, 0.75) 88%,
       rgba(0, 10, 30, 0.0) 100%
     ),
-    /* filaments fins */
-    linear-gradient(90deg, transparent 0%, rgba(230, 245, 255, 0.8) 6%, transparent 18%),
-    linear-gradient(90deg, transparent 0%, rgba(180, 220, 255, 0.7) 12%, transparent 30%),
-    linear-gradient(90deg, transparent 0%, rgba(90, 190, 255, 0.75) 20%, transparent 40%),
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 32%, transparent 50%),
-    linear-gradient(90deg, transparent 0%, rgba(210, 235, 255, 0.8) 46%, transparent 64%),
-    linear-gradient(90deg, transparent 0%, rgba(140, 200, 255, 0.7) 58%, transparent 76%),
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 70%, transparent 88%);
+    /* filaments multiples (C, mais luminosité moyenne L2) */
+    linear-gradient(90deg, transparent 0%, rgba(230, 245, 255, 0.8) 6%, transparent 16%),
+    linear-gradient(90deg, transparent 0%, rgba(180, 220, 255, 0.7) 13%, transparent 28%),
+    linear-gradient(90deg, transparent 0%, rgba(90, 190, 255, 0.75) 21%, transparent 36%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 30%, transparent 44%),
+    linear-gradient(90deg, transparent 0%, rgba(210, 235, 255, 0.8) 43%, transparent 57%),
+    linear-gradient(90deg, transparent 0%, rgba(140, 200, 255, 0.7) 55%, transparent 70%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 66%, transparent 80%);
   background-repeat: no-repeat;
   background-size:
-    220% 90%,
-    220% 3px,
-    220% 5px,
-    220% 4px,
-    220% 3px,
-    220% 5px,
-    220% 4px,
-    220% 3px;
+    260% 100%,
+    260% 3px,
+    260% 4px,
+    260% 3px,
+    260% 3px,
+    260% 4px,
+    260% 3px,
+    260% 3px;
   background-position:
     0% 50%,
     0% 30%,
@@ -119,9 +120,9 @@ body {
     0% 55%,
     0% 45%;
   opacity: 0.7;
-  filter: blur(10px);
+  filter: blur(8px);
   transform: rotate(-30deg);
-  animation: inkFlow 10s linear infinite;
+  animation: inkFlow 9s linear infinite;
 }
 
 /* Halo de profondeur */
@@ -151,16 +152,16 @@ body {
       0% 45%;
   }
   100% {
-    transform: rotate(-30deg) translateX(-25%);
+    transform: rotate(-30deg) translateX(-30%);
     background-position:
-      -200% 50%,
-      -200% 30%,
-      -200% 40%,
-      -200% 50%,
-      -200% 60%,
-      -200% 70%,
-      -200% 55%,
-      -200% 45%;
+      -260% 50%,
+      -260% 30%,
+      -260% 40%,
+      -260% 50%,
+      -260% 60%,
+      -260% 70%,
+      -260% 55%,
+      -260% 45%;
   }
 }
 
@@ -206,7 +207,7 @@ body {
   margin: 0 auto 3rem auto;
 }
 
-/* goutte : centre horizontal, top animé par framer */
+/* goutte : top animé par Framer, centre horizontal fixe */
 .drop {
   position: absolute;
   left: 50%;
@@ -218,10 +219,10 @@ body {
   box-shadow: 0 0 16px rgba(220, 240, 255, 0.9);
 }
 
-/* onde centrée EXACTEMENT au point d'impact */
+/* onde centrée EXACTEMENT au point d'impact (top final = 40) */
 .ripple {
   position: absolute;
-  top: 40px;          /* même Y final que la goutte (top:40) */
+  top: 48px;          /* 40 (top goutte) + 8 (rayon goutte) => même centre */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 26px;
