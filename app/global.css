@@ -40,11 +40,13 @@ body {
   overflow: hidden;
 }
 
+/* Couches de fond standards */
+
 .bg-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -3;
+  z-index: -4;
 }
 
 /* Image de fond */
@@ -65,70 +67,24 @@ body {
   opacity: 0.5;
 }
 
-/* ---------- FLUX D'ENCRE : ruban unique, oblique, filamenteux ---------- */
-
-.bg-ink {
-  z-index: -2;
-  overflow: hidden;
-}
-
-.bg-ink::before {
-  content: "";
-  position: absolute;
-  width: 180%;
-  height: 40%;          /* E1 : ruban relativement fin */
-  left: -40%;
-  bottom: -5%;
-  /* gros ruban oblique bas-gauche -> haut-droit */
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(2, 10, 35, 0.0) 0%,
-      rgba(6, 32, 80, 0.85) 10%,
-      rgba(10, 54, 120, 0.9) 25%,
-      rgba(24, 91, 160, 0.9) 40%,
-      rgba(56, 189, 248, 0.85) 60%,
-      rgba(240, 250, 255, 0.7) 75%,
-      rgba(56, 189, 248, 0.75) 88%,
-      rgba(0, 10, 30, 0.0) 100%
-    ),
-    /* filaments multiples (C, mais luminosité moyenne L2) */
-    linear-gradient(90deg, transparent 0%, rgba(230, 245, 255, 0.8) 6%, transparent 16%),
-    linear-gradient(90deg, transparent 0%, rgba(180, 220, 255, 0.7) 13%, transparent 28%),
-    linear-gradient(90deg, transparent 0%, rgba(90, 190, 255, 0.75) 21%, transparent 36%),
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 30%, transparent 44%),
-    linear-gradient(90deg, transparent 0%, rgba(210, 235, 255, 0.8) 43%, transparent 57%),
-    linear-gradient(90deg, transparent 0%, rgba(140, 200, 255, 0.7) 55%, transparent 70%),
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 66%, transparent 80%);
-  background-repeat: no-repeat;
-  background-size:
-    260% 100%,
-    260% 3px,
-    260% 4px,
-    260% 3px,
-    260% 3px,
-    260% 4px,
-    260% 3px,
-    260% 3px;
-  background-position:
-    0% 50%,
-    0% 30%,
-    0% 40%,
-    0% 50%,
-    0% 60%,
-    0% 70%,
-    0% 55%,
-    0% 45%;
-  opacity: 0.7;
-  filter: blur(8px);
-  transform: rotate(-30deg);
-  animation: inkFlow 9s linear infinite;
-}
-
 /* Halo de profondeur */
 .bg-glow {
   background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.25), transparent 70%);
   animation: glowPulse 9s ease-in-out infinite;
+}
+
+/* Canvas WebGL du flux d'encre */
+.ink-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -3; /* entre bg-image/tint et le contenu */
+}
+
+.ink-layer canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* Animations fond */
@@ -136,33 +92,6 @@ body {
 @keyframes zoomFlow {
   0% { transform: scale(1.05); }
   100% { transform: scale(1.12); }
-}
-
-@keyframes inkFlow {
-  0% {
-    transform: rotate(-30deg) translateX(0%);
-    background-position:
-      0% 50%,
-      0% 30%,
-      0% 40%,
-      0% 50%,
-      0% 60%,
-      0% 70%,
-      0% 55%,
-      0% 45%;
-  }
-  100% {
-    transform: rotate(-30deg) translateX(-30%);
-    background-position:
-      -260% 50%,
-      -260% 30%,
-      -260% 40%,
-      -260% 50%,
-      -260% 60%,
-      -260% 70%,
-      -260% 55%,
-      -260% 45%;
-  }
 }
 
 @keyframes glowPulse {
@@ -176,6 +105,7 @@ body {
   position: relative;
   text-align: center;
   max-width: 520px;
+  z-index: 1;
 }
 
 .hero-text {
@@ -205,6 +135,7 @@ body {
   width: 230px;
   height: 160px;
   margin: 0 auto 3rem auto;
+  z-index: 1;
 }
 
 /* goutte : top animé par Framer, centre horizontal fixe */
@@ -219,10 +150,10 @@ body {
   box-shadow: 0 0 16px rgba(220, 240, 255, 0.9);
 }
 
-/* onde centrée EXACTEMENT au point d'impact (top final = 40) */
+/* onde centrée sur le point d'impact (top final 40, rayon ≈ 8) */
 .ripple {
   position: absolute;
-  top: 48px;          /* 40 (top goutte) + 8 (rayon goutte) => même centre */
+  top: 48px;          /* 40 + 8 = centre géométrique */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 26px;
@@ -256,6 +187,7 @@ body {
               box-shadow 0.25s ease,
               transform 0.25s ease,
               border-color 0.25s ease;
+  z-index: 1;
 }
 
 .cta-btn:hover {
