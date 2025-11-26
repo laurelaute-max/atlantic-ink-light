@@ -35,12 +35,12 @@ html, body {
   z-index: -3;
 }
 
-/* 1 — Image principale assombrie */
+/* 1 — FOND ASSOMBRI + léger contraste */
 .bg-image {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.40) contrast(1.25) saturate(1.2);
+  filter: brightness(0.35) contrast(1.25) saturate(1.2);
   animation: bg-zoom 45s ease-in-out infinite alternate;
 }
 
@@ -49,12 +49,12 @@ html, body {
   100% { transform: scale(1.10); }
 }
 
-/* 2 — Teinte globale */
+/* 2 — Teinte bleue */
 .bg-tint {
   background: radial-gradient(circle at 25% 30%, rgba(120,160,255,0.40), transparent 55%),
-              radial-gradient(circle at 75% 75%, rgba(50,120,255,0.30), transparent 60%);
+              radial-gradient(circle at 75% 75%, rgba(50,120,255,0.25), transparent 60%);
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.50;
   animation: tint-move 20s ease-in-out infinite alternate;
 }
 
@@ -63,110 +63,132 @@ html, body {
   100% { transform: translate(10px, 12px); }
 }
 
-/* 3 — NOUVELLE COUCHE FOG */
+/* ---------- FOG AJUSTÉ ---------- */
+/* Fog réduite pour laisser plus de place à l’encre */
 .bg-fog {
-  background: radial-gradient(circle at 50% 50%, rgba(10,25,60,0.55), transparent 70%);
-  filter: blur(55px);
-  opacity: 0.55;
+  background: radial-gradient(circle at 50% 50%, rgba(10,25,60,0.38), transparent 75%);
+  filter: blur(45px);
+  opacity: 0.38;
   z-index: -2;
 }
 
-/* ---------- ENCRE ---------- */
-/* Les valeurs ont été augmentées et calibrées pour la VISIBILITÉ A */
+/* ---------- ENCRE — MODE A++ ---------- */
 
+/* Liquéfaction : ajout d'une torsion sinusoïdale globale */
+@keyframes liquid-twist {
+  0% { transform: skewX(4deg) skewY(2deg); }
+  50% { transform: skewX(-4deg) skewY(-2deg); }
+  100% { transform: skewX(4deg) skewY(2deg); }
+}
+
+/* COUCHE 1 — nappe principale */
 .bg-ink {
   background-image: linear-gradient(
     135deg,
-    rgba(255,255,255,0.30),
-    rgba(170,200,255,0.50),
+    rgba(255,255,255,0.33),
+    rgba(180,210,255,0.55),
     rgba(255,255,255,0.22)
   );
-  opacity: 0.85;
+  opacity: 0.90;
   mix-blend-mode: lighter;
-  filter: blur(26px) brightness(1.35);
-  animation: inkflow1 17s linear infinite;
+  filter: blur(26px) brightness(1.45);
+  animation:
+    inkflow1 16s linear infinite,
+    liquid-twist 14s ease-in-out infinite;
 }
 
 @keyframes inkflow1 {
   0% { transform: translate(-55px, -5px); }
-  100% { transform: translate(80px, 15px); }
+  100% { transform: translate(90px, 20px); }
 }
 
+/* COUCHE 2 — sillon épais */
 .bg-ink2 {
   background-image: linear-gradient(
     135deg,
     transparent 0%,
-    rgba(200,230,255,0.65) 40%,
+    rgba(210,235,255,0.75) 40%,
     transparent 80%
-  );
-  opacity: 0.60;
-  mix-blend-mode: lighter;
-  filter: blur(22px) brightness(1.6);
-  animation: inkflow2 14s linear infinite;
-}
-
-@keyframes inkflow2 {
-  0% { transform: translate(-100px, -20px); }
-  100% { transform: translate(110px, 20px); }
-}
-
-.bg-ink-filament {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(255,255,255,0.32) 0px,
-    rgba(255,255,255,0.75) 14px,
-    rgba(255,255,255,0.20) 28px
   );
   opacity: 0.70;
   mix-blend-mode: lighter;
-  filter: blur(4px) brightness(1.5);
-  animation: filament-shift 12s linear infinite;
+  filter: blur(20px) brightness(1.65);
+  animation:
+    inkflow2 13s linear infinite,
+    liquid-twist 20s ease-in-out infinite;
+}
+
+@keyframes inkflow2 {
+  0% { transform: translate(-110px, -20px); }
+  100% { transform: translate(130px, 25px); }
+}
+
+/* COUCHE 3 — filaments principaux */
+.bg-ink-filament {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,0.40) 0px,
+    rgba(255,255,255,0.90) 14px,
+    rgba(255,255,255,0.25) 28px
+  );
+  opacity: 0.85;
+  mix-blend-mode: lighter;
+  filter: blur(5px) brightness(1.65);
+  animation:
+    filament-shift 11s linear infinite,
+    liquid-twist 18s ease-in-out infinite;
 }
 
 @keyframes filament-shift {
-  0% { transform: translateX(-90px); }
-  100% { transform: translateX(130px); }
+  0% { transform: translateX(-110px); }
+  100% { transform: translateX(160px); }
 }
 
+/* COUCHE 4 — filament sinueux */
 .bg-ink-wavy {
   background-image: linear-gradient(
     135deg,
-    rgba(255,255,255,0.55),
-    rgba(200,220,255,0.25)
+    rgba(255,255,255,0.60),
+    rgba(200,220,255,0.30)
   );
-  opacity: 0.55;
+  opacity: 0.60;
   mix-blend-mode: lighter;
-  filter: blur(14px) brightness(1.6);
-  animation: ink-wavy 16s ease-in-out infinite;
+  filter: blur(12px) brightness(1.75);
+  animation:
+    ink-wavy 15s ease-in-out infinite,
+    liquid-twist 16s ease-in-out infinite;
 }
 
 @keyframes ink-wavy {
-  0%   { transform: translate(-60px, -10px) skewX(10deg); }
-  50%  { transform: translate(60px, 10px) skewX(-10deg); }
-  100% { transform: translate(-60px, -10px) skewX(10deg); }
+  0%   { transform: translate(-70px, -10px) skewX(10deg); }
+  50%  { transform: translate(80px, 10px) skewX(-10deg); }
+  100% { transform: translate(-70px, -10px) skewX(10deg); }
 }
 
+/* COUCHE 5 — ultra-fin très lumineux */
 .bg-ink-ultrafine {
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(255,255,255,0.70) 0px,
+    rgba(255,255,255,0.75) 0px,
     rgba(255,255,255,1) 6px,
-    rgba(255,255,255,0.30) 12px
+    rgba(255,255,255,0.40) 12px
   );
-  opacity: 0.75;
-  filter: blur(1.8px) brightness(1.7);
+  opacity: 0.85;
+  filter: blur(1.6px) brightness(1.9);
   mix-blend-mode: lighter;
-  animation: ultrafine-flow 10s linear infinite;
+  animation:
+    ultrafine-flow 10.5s linear infinite,
+    liquid-twist 14s ease-in-out infinite;
 }
 
 @keyframes ultrafine-flow {
-  0% { transform: translate(-130px, -20px); }
-  100% { transform: translate(150px, 20px); }
+  0% { transform: translate(-150px, -25px); }
+  100% { transform: translate(170px, 25px); }
 }
 
-/* ---------- HALO GLOW ---------- */
+/* ---------- GLOW ---------- */
 .bg-glow {
-  background: radial-gradient(circle at 50% 65%, rgba(255,255,255,0.35), transparent 70%);
+  background: radial-gradient(circle at 50% 65%, rgba(255,255,255,0.38), transparent 70%);
   animation: glow-pulse 9s ease-in-out infinite;
 }
 
