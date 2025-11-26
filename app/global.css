@@ -8,26 +8,37 @@
 }
 
 /* ---------- RESET ---------- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-/* ---------- STRUCTURE ---------- */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
 
 body {
   background: var(--bg-dark);
   color: var(--text-main);
+  font-family: system-ui, sans-serif;
   overflow-x: hidden;
 }
 
+/* ---------- LAYOUT ---------- */
+
 .landing {
+  position: relative;
   height: 100vh;
   width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  overflow: hidden;
 }
-
-/* ---------- FONDS ---------- */
 
 .bg-layer {
   position: fixed;
@@ -36,92 +47,121 @@ body {
   z-index: -3;
 }
 
-/* Image */
+/* Image de fond */
 .bg-image {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  animation: zoomFlow 36s ease-in-out infinite alternate;
   filter: brightness(0.6) contrast(1.15);
+  animation: zoomFlow 36s ease-in-out infinite alternate;
 }
 
-/* Halo général */
+/* Voile coloré */
 .bg-tint {
-  background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
-              radial-gradient(circle at 80% 85%, rgba(0, 150, 255, 0.45), transparent 60%);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba(0, 150, 255, 0.45), transparent 60%);
   mix-blend-mode: screen;
   opacity: 0.5;
 }
 
-/* ⚡ FILAMENTS F3 (bioluminescents) */
-/* couche 1 */
-.bg-ink1 {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(180, 235, 255, 0.04) 0px,
-    rgba(220, 247, 255, 0.25) 12px,
-    rgba(180, 225, 255, 0.1) 26px
-  );
-  mix-blend-mode: screen;
-  filter: blur(6px);
-  animation: inkFlow1 12s linear infinite;
+/* Flux d'encre unique, oblique, avec filaments multiples */
+.bg-ink {
+  z-index: -2;
+  overflow: hidden;
 }
 
-/* couche 2 */
-.bg-ink2 {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06) 0px,
-    rgba(150, 210, 255, 0.40) 18px,
-    rgba(255, 255, 255, 0.05) 38px
-  );
-  mix-blend-mode: screen;
+.bg-ink::before {
+  content: "";
+  position: absolute;
+  width: 180%;
+  height: 70%;
+  left: -40%;
+  bottom: -10%;
+  /* gros ruban oblique bas-gauche -> haut-droit */
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(2, 10, 35, 0.0) 0%,
+      rgba(6, 32, 80, 0.8) 15%,
+      rgba(10, 54, 120, 0.9) 30%,
+      rgba(24, 91, 160, 0.85) 45%,
+      rgba(56, 189, 248, 0.8) 60%,
+      rgba(240, 250, 255, 0.65) 75%,
+      rgba(56, 189, 248, 0.6) 85%,
+      rgba(0, 10, 30, 0.0) 100%
+    ),
+    /* filaments fins */
+    linear-gradient(90deg, transparent 0%, rgba(230, 245, 255, 0.8) 6%, transparent 18%),
+    linear-gradient(90deg, transparent 0%, rgba(180, 220, 255, 0.7) 12%, transparent 30%),
+    linear-gradient(90deg, transparent 0%, rgba(90, 190, 255, 0.75) 20%, transparent 40%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 32%, transparent 50%),
+    linear-gradient(90deg, transparent 0%, rgba(210, 235, 255, 0.8) 46%, transparent 64%),
+    linear-gradient(90deg, transparent 0%, rgba(140, 200, 255, 0.7) 58%, transparent 76%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 70%, transparent 88%);
+  background-repeat: no-repeat;
+  background-size:
+    220% 90%,
+    220% 3px,
+    220% 5px,
+    220% 4px,
+    220% 3px,
+    220% 5px,
+    220% 4px,
+    220% 3px;
+  background-position:
+    0% 50%,
+    0% 30%,
+    0% 40%,
+    0% 50%,
+    0% 60%,
+    0% 70%,
+    0% 55%,
+    0% 45%;
   opacity: 0.7;
   filter: blur(10px);
-  animation: inkFlow2 9s linear infinite;
+  transform: rotate(-30deg);
+  animation: inkFlow 10s linear infinite;
 }
 
-/* couche 3 – filaments brillants */
-.bg-ink3 {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.10) 0px,
-    rgba(255, 255, 255, 0.70) 6px,
-    rgba(255, 255, 255, 0.06) 16px
-  );
-  mix-blend-mode: screen;
-  opacity: 0.5;
-  filter: blur(3px);
-  animation: inkFlow3 6s linear infinite;
+/* Halo de profondeur */
+.bg-glow {
+  background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.25), transparent 70%);
+  animation: glowPulse 9s ease-in-out infinite;
 }
 
-/* Animations */
+/* Animations fond */
 
 @keyframes zoomFlow {
   0% { transform: scale(1.05); }
   100% { transform: scale(1.12); }
 }
 
-/* F3 + V3 → rapide */
-@keyframes inkFlow1 {
-  0% { transform: translate3d(-120px, -60px, 0); }
-  100% { transform: translate3d(160px, 90px, 0); }
-}
-
-@keyframes inkFlow2 {
-  0% { transform: translate3d(-200px, -40px, 0); }
-  100% { transform: translate3d(260px, 40px, 0); }
-}
-
-@keyframes inkFlow3 {
-  0% { transform: translate3d(-80px, -20px, 0); }
-  100% { transform: translate3d(180px, 40px, 0); }
-}
-
-/* Glow de profondeur */
-.bg-glow {
-  background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.25), transparent 70%);
-  animation: glowPulse 9s ease-in-out infinite;
+@keyframes inkFlow {
+  0% {
+    transform: rotate(-30deg) translateX(0%);
+    background-position:
+      0% 50%,
+      0% 30%,
+      0% 40%,
+      0% 50%,
+      0% 60%,
+      0% 70%,
+      0% 55%,
+      0% 45%;
+  }
+  100% {
+    transform: rotate(-30deg) translateX(-25%);
+    background-position:
+      -200% 50%,
+      -200% 30%,
+      -200% 40%,
+      -200% 50%,
+      -200% 60%,
+      -200% 70%,
+      -200% 55%,
+      -200% 45%;
+  }
 }
 
 @keyframes glowPulse {
@@ -134,12 +174,18 @@ body {
 .hero {
   position: relative;
   text-align: center;
+  max-width: 520px;
+}
+
+.hero-text {
+  margin-bottom: 3.6rem;
 }
 
 .hero-top {
   font-family: "Cormorant Garamond", serif;
   letter-spacing: 0.32em;
   font-size: 0.8rem;
+  text-transform: uppercase;
   opacity: 0.8;
   margin-bottom: 1.8rem;
 }
@@ -148,10 +194,10 @@ body {
   font-family: "Playfair Display", serif;
   font-size: clamp(2.6rem, 6vw, 3.8rem);
   line-height: 1.1;
-  margin-bottom: 3.5rem;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-/* ---------- IMPACT ---------- */
+/* ---------- IMPACT : GOUTTE + ONDE ---------- */
 
 .impact-zone {
   position: relative;
@@ -160,26 +206,36 @@ body {
   margin: 0 auto 3rem auto;
 }
 
-/* goutte */
+/* goutte : centre horizontal, top animé par framer */
 .drop {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 16px;
   height: 16px;
   background: radial-gradient(circle at 30% 20%, #ffffff, #a5e3ff);
   border-radius: 50%;
-  margin: 0 auto;
   box-shadow: 0 0 16px rgba(220, 240, 255, 0.9);
 }
 
-/* onde centrée */
+/* onde centrée EXACTEMENT au point d'impact */
 .ripple {
   position: absolute;
-  top: 30px;   /* aligné juste sous la goutte */
+  top: 40px;          /* même Y final que la goutte (top:40) */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 26px;
   height: 26px;
   border-radius: 50%;
   border: 1.7px solid rgba(230, 245, 255, 0.9);
+}
+
+.ripple-main {
+  box-shadow: 0 0 24px rgba(220, 245, 255, 0.7);
+}
+
+.ripple-secondary {
+  border-color: rgba(210, 235, 255, 0.7);
 }
 
 /* ---------- BOUTON ---------- */
@@ -190,14 +246,43 @@ body {
   background: transparent;
   border: 1.5px solid rgba(244, 250, 255, 0.9);
   color: var(--text-main);
+  letter-spacing: 0.03em;
+  font-size: 1rem;
+  cursor: pointer;
   backdrop-filter: blur(14px);
-  transition: 0.25s ease;
+  -webkit-backdrop-filter: blur(14px);
+  transition: background-color 0.25s ease,
+              box-shadow 0.25s ease,
+              transform 0.25s ease,
+              border-color 0.25s ease;
 }
 
 .cta-btn:hover {
   background-color: rgba(15, 118, 178, 0.32);
   box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-  border-color: white;
+  border-color: #ffffff;
   transform: translateY(-2px);
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 600px) {
+  .hero {
+    max-width: 90vw;
+  }
+
+  .hero-text {
+    margin-bottom: 3rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.3rem, 8vw, 3.2rem);
+  }
+
+  .impact-zone {
+    width: 210px;
+    height: 140px;
+    margin-bottom: 2.6rem;
+  }
 }
 
