@@ -17,7 +17,6 @@ html, body {
 }
 
 /* ---------- PAGE ---------- */
-
 .landing {
   position: relative;
   height: 100vh;
@@ -29,7 +28,6 @@ html, body {
 }
 
 /* ---------- COUCHES DE FOND ---------- */
-
 .bg-layer {
   position: fixed;
   inset: 0;
@@ -37,12 +35,12 @@ html, body {
   z-index: -3;
 }
 
-/* Image principale */
+/* 1 — Image principale assombrie */
 .bg-image {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.55) contrast(1.25) saturate(1.2);
+  filter: brightness(0.40) contrast(1.25) saturate(1.2);
   animation: bg-zoom 45s ease-in-out infinite alternate;
 }
 
@@ -51,12 +49,12 @@ html, body {
   100% { transform: scale(1.10); }
 }
 
-/* Teinte générale */
+/* 2 — Teinte globale */
 .bg-tint {
-  background: radial-gradient(circle at 25% 30%, rgba(120,160,255,0.45), transparent 55%),
-              radial-gradient(circle at 75% 75%, rgba(50,120,255,0.35), transparent 60%);
+  background: radial-gradient(circle at 25% 30%, rgba(120,160,255,0.40), transparent 55%),
+              radial-gradient(circle at 75% 75%, rgba(50,120,255,0.30), transparent 60%);
   mix-blend-mode: screen;
-  opacity: 0.7;
+  opacity: 0.55;
   animation: tint-move 20s ease-in-out infinite alternate;
 }
 
@@ -65,19 +63,27 @@ html, body {
   100% { transform: translate(10px, 12px); }
 }
 
-/* ---------- ENCRE - VISIBILITÉ FORTE (A) ---------- */
+/* 3 — NOUVELLE COUCHE FOG */
+.bg-fog {
+  background: radial-gradient(circle at 50% 50%, rgba(10,25,60,0.55), transparent 70%);
+  filter: blur(55px);
+  opacity: 0.55;
+  z-index: -2;
+}
 
-/* Nappe principale lumineuse */
+/* ---------- ENCRE ---------- */
+/* Les valeurs ont été augmentées et calibrées pour la VISIBILITÉ A */
+
 .bg-ink {
   background-image: linear-gradient(
     135deg,
-    rgba(255,255,255,0.25),
-    rgba(170,200,255,0.40),
-    rgba(255,255,255,0.18)
+    rgba(255,255,255,0.30),
+    rgba(170,200,255,0.50),
+    rgba(255,255,255,0.22)
   );
-  opacity: 0.75;
+  opacity: 0.85;
   mix-blend-mode: lighter;
-  filter: blur(25px) brightness(1.3);
+  filter: blur(26px) brightness(1.35);
   animation: inkflow1 17s linear infinite;
 }
 
@@ -86,17 +92,16 @@ html, body {
   100% { transform: translate(80px, 15px); }
 }
 
-/* Sillon épais très visible */
 .bg-ink2 {
   background-image: linear-gradient(
     135deg,
     transparent 0%,
-    rgba(200,230,255,0.55) 40%,
+    rgba(200,230,255,0.65) 40%,
     transparent 80%
   );
-  opacity: 0.6;
+  opacity: 0.60;
   mix-blend-mode: lighter;
-  filter: blur(22px) brightness(1.4);
+  filter: blur(22px) brightness(1.6);
   animation: inkflow2 14s linear infinite;
 }
 
@@ -105,17 +110,16 @@ html, body {
   100% { transform: translate(110px, 20px); }
 }
 
-/* Filaments fins renforcés */
 .bg-ink-filament {
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(255,255,255,0.28) 0px,
-    rgba(255,255,255,0.65) 14px,
-    rgba(255,255,255,0.15) 28px
+    rgba(255,255,255,0.32) 0px,
+    rgba(255,255,255,0.75) 14px,
+    rgba(255,255,255,0.20) 28px
   );
-  opacity: 0.55;
+  opacity: 0.70;
   mix-blend-mode: lighter;
-  filter: blur(6px) brightness(1.4);
+  filter: blur(4px) brightness(1.5);
   animation: filament-shift 12s linear infinite;
 }
 
@@ -124,16 +128,15 @@ html, body {
   100% { transform: translateX(130px); }
 }
 
-/* Filament sinueux */
 .bg-ink-wavy {
   background-image: linear-gradient(
     135deg,
-    rgba(255,255,255,0.5),
-    rgba(200,220,255,0.2)
+    rgba(255,255,255,0.55),
+    rgba(200,220,255,0.25)
   );
-  opacity: 0.45;
+  opacity: 0.55;
   mix-blend-mode: lighter;
-  filter: blur(14px) brightness(1.5);
+  filter: blur(14px) brightness(1.6);
   animation: ink-wavy 16s ease-in-out infinite;
 }
 
@@ -143,16 +146,15 @@ html, body {
   100% { transform: translate(-60px, -10px) skewX(10deg); }
 }
 
-/* Filament ultra-fin lumineux */
 .bg-ink-ultrafine {
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(255,255,255,0.6) 0px,
+    rgba(255,255,255,0.70) 0px,
     rgba(255,255,255,1) 6px,
-    rgba(255,255,255,0.25) 12px
+    rgba(255,255,255,0.30) 12px
   );
-  opacity: 0.55;
-  filter: blur(2px) brightness(1.6);
+  opacity: 0.75;
+  filter: blur(1.8px) brightness(1.7);
   mix-blend-mode: lighter;
   animation: ultrafine-flow 10s linear infinite;
 }
@@ -162,9 +164,9 @@ html, body {
   100% { transform: translate(150px, 20px); }
 }
 
-/* Halo respirant */
+/* ---------- HALO GLOW ---------- */
 .bg-glow {
-  background: radial-gradient(circle at 50% 65%, rgba(255,255,255,0.28), transparent 70%);
+  background: radial-gradient(circle at 50% 65%, rgba(255,255,255,0.35), transparent 70%);
   animation: glow-pulse 9s ease-in-out infinite;
 }
 
@@ -174,11 +176,10 @@ html, body {
 }
 
 /* ---------- TEXTE ---------- */
-
 .hero {
   max-width: 540px;
   text-align: center;
-  z-index: 10;
+  z-index: 20;
   position: relative;
 }
 
@@ -200,7 +201,6 @@ html, body {
 }
 
 /* ---------- GOUTTE & ONDE ---------- */
-
 .impact-zone {
   position: relative;
   width: 230px;
@@ -219,13 +219,13 @@ html, body {
 
 .ripple {
   position: absolute;
-  top: 20px; /* <-- ONDE PARFAITEMENT CENTRÉE */
+  top: 20px;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1.8px solid rgba(230,245,255,0.95);
+  border: 2px solid rgba(255,255,255,0.95);
 }
 
 .ripple-main {
@@ -237,7 +237,6 @@ html, body {
 }
 
 /* ---------- BOUTON ---------- */
-
 .cta-btn {
   padding: 0.9rem 2.6rem;
   border-radius: 999px;
