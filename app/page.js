@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [showButton, setShowButton] = useState(false);
 
-  // Affichage du bouton après la séquence (goutte + onde + encre)
+  // Apparition du bouton après la séquence complète
   useEffect(() => {
     const timer = setTimeout(() => setShowButton(true), 12000);
     return () => clearTimeout(timer);
@@ -14,19 +14,20 @@ export default function Home() {
 
   return (
     <main className="landing">
-      {/* Fonds animés */}
+      {/* FONDS / ENCRE */}
       <div className="bg-layer bg-image" />
       <div className="bg-layer bg-tint" />
       <div className="bg-layer bg-ink" />
       <div className="bg-layer bg-ink2" />
       <div className="bg-layer bg-ink-filament" />
+      <div className="bg-layer bg-ink-wavy" />
+      <div className="bg-layer bg-ink-ultrafine" />
       <div className="bg-layer bg-glow" />
 
       <section className="hero">
-        {/* Texte d’en-tête */}
+        {/* TEXTE */}
         <div className="hero-text">
           <p className="hero-top">ATLANTIC PULSE</p>
-
           <h1 className="hero-title">
             L’océan
             <br />
@@ -34,17 +35,16 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Zone d’impact : goutte + onde */}
+        {/* GOUTTE + ONDE */}
         <div className="impact-zone">
-
-          {/* Goutte lente (10s) + disparition en fondu */}
+          {/* Goutte très lente */}
           <motion.div
             className="drop"
             initial={{ y: -220, opacity: 1 }}
             animate={{ y: 0, opacity: 0 }}
             transition={{
               delay: 0.4,
-              duration: 10.0,
+              duration: 10,
               ease: "easeOut",
             }}
           />
@@ -53,7 +53,7 @@ export default function Home() {
           <motion.div
             className="ripple ripple-main"
             initial={{ scale: 0, opacity: 0.7 }}
-            animate={{ scale: 6.2, opacity: 0 }}
+            animate={{ scale: 6.5, opacity: 0 }}
             transition={{
               delay: 8.2,
               duration: 2.5,
@@ -64,8 +64,8 @@ export default function Home() {
           {/* Onde secondaire */}
           <motion.div
             className="ripple ripple-secondary"
-            initial={{ scale: 0, opacity: 0.45 }}
-            animate={{ scale: 8.5, opacity: 0 }}
+            initial={{ scale: 0, opacity: 0.5 }}
+            animate={{ scale: 9.2, opacity: 0 }}
             transition={{
               delay: 8.3,
               duration: 3.0,
@@ -74,21 +74,18 @@ export default function Home() {
           />
         </div>
 
-        {/* Bouton final */}
+        {/* BOUTON */}
         {showButton && (
           <motion.button
             className="cta-btn"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            onClick={() => {
-              window.location.href = "/map";
-            }}
+            onClick={() => (window.location.href = "/map")}
           >
             Entrer dans l’océan
           </motion.button>
         )}
-
       </section>
     </main>
   );
