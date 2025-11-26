@@ -42,7 +42,7 @@ body {
   padding: clamp(2.5rem, 6vh, 4rem) clamp(1.5rem, 4vw, 3rem);
 }
 
-/* ---------- FONDS ---------- */
+/* ============= FONDS ============= */
 
 .bg-layer {
   position: fixed;
@@ -56,68 +56,105 @@ body {
   background-image: url("/home-background.png");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.65) contrast(1.2) saturate(1.2);
+  filter: brightness(0.65) contrast(1.2) saturate(1.25);
   animation: slow-zoom 42s ease-in-out infinite alternate;
 }
 
-/* Couleurs volutes globales */
+/* Couleurs globales */
 .bg-tint {
-  background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.5), transparent 55%),
-              radial-gradient(circle at 80% 85%, rgba(0, 160, 255, 0.4), transparent 60%),
-              radial-gradient(circle at 50% 60%, rgba(0, 10, 40, 0.85), #000814 75%);
+  background: radial-gradient(circle at 30% 20%, rgba(40, 120, 255, 0.45), transparent 55%),
+              radial-gradient(circle at 75% 80%, rgba(0, 150, 255, 0.35), transparent 60%),
+              radial-gradient(circle at 50% 60%, rgba(0, 8, 40, 0.85), #000814 75%);
   mix-blend-mode: screen;
   opacity: 0.6;
-  animation: drift 22s ease-in-out infinite alternate;
+  animation: drift 24s ease-in-out infinite alternate;
 }
 
-/* Courant d'encre dense (passe sous le texte) */
-.bg-ink {
-  z-index: -2;
-  background-image: repeating-linear-gradient(
+/* ----------- COUCHES D’ENCRE (F2) ----------- */
+
+/* LAYER 1 — encre large (fond) */
+.ink-layer-1 {
+  background: repeating-linear-gradient(
     135deg,
-    rgba(230, 245, 255, 0.03) 0px,
-    rgba(230, 245, 255, 0.08) 40px,
-    rgba(180, 215, 255, 0.22) 80px,
-    rgba(230, 245, 255, 0.0) 120px
+    rgba(200, 230, 255, 0.02) 0px,
+    rgba(200, 230, 255, 0.06) 80px,
+    rgba(150, 200, 255, 0.15) 160px,
+    rgba(200, 230, 255, 0) 260px
   );
+  filter: blur(22px);
+  opacity: 0.55;
   mix-blend-mode: screen;
-  opacity: 0.6;
-  filter: blur(14px);
-  animation: ink-flow 30s linear infinite;
+  animation: ink-flow-1 26s linear infinite;
+}
+
+/* LAYER 2 — veines d’encre moyennes */
+.ink-layer-2 {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(200, 240, 255, 0.18) 0px,
+    rgba(215, 245, 255, 0.28) 40px,
+    rgba(140, 190, 255, 0.15) 80px,
+    rgba(180, 230, 255, 0.05) 120px
+  );
+  filter: blur(12px);
+  opacity: 0.45;
+  mix-blend-mode: screen;
+  animation: ink-flow-2 22s linear infinite;
+}
+
+/* LAYER 3 — filaments fins & lumineux */
+.ink-layer-3 {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0px,
+    rgba(240, 250, 255, 0.30) 16px,
+    rgba(180, 210, 255, 0.10) 32px,
+    rgba(255, 255, 255, 0) 48px
+  );
+  filter: blur(6px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: ink-flow-3 23s ease-in-out infinite alternate;
+}
+
+/* Animations du flux diagonal */
+
+@keyframes ink-flow-1 {
+  0% { transform: translate3d(-80px, -40px, 0); }
+  100% { transform: translate3d(120px, 60px, 0); }
+}
+
+@keyframes ink-flow-2 {
+  0% { transform: translate3d(-60px, -30px, 0); }
+  100% { transform: translate3d(140px, 50px, 0); }
+}
+
+@keyframes ink-flow-3 {
+  0% { transform: translate3d(-40px, -20px, 0); }
+  100% { transform: translate3d(160px, 40px, 0); }
 }
 
 /* Halo respirant */
 .bg-glow {
-  background: radial-gradient(circle at 50% 65%, rgba(220, 245, 255, 0.26), transparent 70%);
-  animation: pulse 9s ease-in-out infinite;
+  background: radial-gradient(circle at 50% 60%, rgba(220, 245, 255, 0.22), transparent 75%);
+  animation: pulse 10s ease-in-out infinite;
 }
 
-/* Animations fond */
+/* Autres animations */
+
 @keyframes slow-zoom {
   0% { transform: scale(1.04); }
   100% { transform: scale(1.1); }
 }
 
 @keyframes drift {
-  0% { transform: translate3d(-10px, -14px, 0); }
-  100% { transform: translate3d(10px, 14px, 0); }
+  0% { transform: translate(-14px, -18px); }
+  100% { transform: translate(14px, 18px); }
 }
 
 @keyframes pulse {
-  0%,100% { opacity: 0.38; }
-  50%    { opacity: 0.65; }
-}
-
-@keyframes ink-flow {
-  0% {
-    transform: translate3d(-60px, 0, 0);
-  }
-  50% {
-    transform: translate3d(40px, -10px, 0);
-  }
-  100% {
-    transform: translate3d(80px, 5px, 0);
-  }
+  0%,100% { opacity: 0.35; }
+  50%    { opacity: 0.6; }
 }
 
 /* ---------- TEXTE ---------- */
@@ -126,9 +163,6 @@ body {
   position: relative;
   max-width: 520px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .hero-text {
@@ -140,9 +174,8 @@ body {
   letter-spacing: 0.32em;
   text-transform: uppercase;
   font-size: 0.78rem;
-  opacity: 0.8;
+  opacity: 0.85;
   margin-bottom: 1.8rem;
-  color: rgba(231, 235, 245, 0.88);
 }
 
 .hero-title {
@@ -150,17 +183,16 @@ body {
   font-size: clamp(2.6rem, 5.8vw, 3.8rem);
   font-weight: 500;
   line-height: 1.1;
-  color: var(--text-main);
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 10px 30px rgba(0,0,0,0.6);
 }
 
 /* ---------- IMPACT ZONE ---------- */
 
 .impact-zone {
   position: relative;
-  width: 230px;
-  height: 150px;
-  margin: 0 auto 3.1rem auto;
+  width: 240px;
+  height: 160px;
+  margin: 0 auto 3.4rem auto;
 }
 
 /* Goutte */
@@ -173,20 +205,20 @@ body {
   box-shadow: 0 0 14px rgba(220, 240, 255, 0.9);
 }
 
-/* Ondes — centrées exactement autour du point d'impact */
+/* Onde CENTRÉE sous la goutte */
 .ripple {
   position: absolute;
-  top: 14px; /* centre vertical à la jonction sous la goutte */
+  top: 22px; /* aligné à la fin de la chute */
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 26px;
-  height: 26px;
+  transform: translate(-50%, -50%); /* centre réel */
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1.6px solid rgba(230, 245, 255, 0.9);
 }
 
 .ripple-main {
-  box-shadow: 0 0 24px rgba(220, 245, 255, 0.7);
+  box-shadow: 0 0 26px rgba(220, 245, 255, 0.7);
 }
 
 .ripple-secondary {
@@ -205,39 +237,12 @@ body {
   font-size: 1rem;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: background-color 0.25s ease,
-              box-shadow 0.25s ease,
-              transform 0.25s ease,
-              border-color 0.25s ease;
+  transition: 0.25s ease;
 }
 
 .cta-btn:hover {
   background-color: rgba(15, 118, 178, 0.32);
   box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-  border-color: rgba(255, 255, 255, 1);
   transform: translateY(-2px);
-}
-
-/* ---------- RESPONSIVE ---------- */
-
-@media (max-width: 600px) {
-  .hero {
-    max-width: 90vw;
-  }
-
-  .hero-text {
-    margin-bottom: 3rem;
-  }
-
-  .hero-title {
-    font-size: clamp(2.3rem, 8vw, 3.2rem);
-  }
-
-  .impact-zone {
-    width: 210px;
-    height: 140px;
-    margin-bottom: 2.6rem;
-  }
 }
 
