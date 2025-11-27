@@ -41,7 +41,7 @@ const fragmentShader = `
 
     // --- IMPORTANT : moment où l'onde commence (sec) ---
     // On synchronise pour que ça démarre après la disparition complète de la goutte
-    float rippleStart = 8.8;
+    float rippleStart = 4.1;
     float rippleT = max(u_time - rippleStart, 0.0);
 
     // OSCILLATIONS DU RUBAN
