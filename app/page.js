@@ -36,51 +36,57 @@ const fragmentShader = `
     // centrer et passer en repère [-1,1]
     vec2 p = uv - 0.5;
 
-    // rotation pour flux diagonal bas-gauche -> haut-droit
+    // flux diagonal bas-gauche -> haut-droit
     float angle = radians(-30.0);
     vec2 pr = rotate(p, angle);
 
-    // temps et vitesse globale (flux plus lent)
+    // temps et vitesse globale (flux plutôt lent)
     float t = u_time * 0.2;
 
-    // légère oscillation du champ (veines qui serpentent)
+    // centre de l'impact dans le repère du flux
+    vec2 center = vec2(0.0, -0.05);
+    float rippleStart = 9.0;           // moment où la perturbation commence (sec)
+    float rippleT = max(u_time - rippleStart, 0.0);
+
+    // oscillations (veines qui serpentent) AVANT morphing
     vec2 prOsc = pr;
     prOsc.y += 0.05 * sin(pr.x * 2.3 + t * 0.8);
     prOsc.y += 0.03 * sin(pr.x * 4.1 - t * 0.6);
     prOsc.x += 0.02 * sin(pr.y * 3.0 + t * 0.7);
 
-    // centre de l'impact en coordonnées pr (approximé un peu sous le centre)
-    vec2 center = vec2(0.0, -0.05);
-    float rippleStart = 9.0;           // moment où l'onde commence (s)
-    float rippleT = max(u_time - rippleStart, 0.0);
+    // ---------------- TRANSITION DIAGONAL -> VORTEX ----------------
 
-    float rippleField = 0.0;
-    vec2 prDeformed = prOsc;
+    // Coord diag (flux initial)
+    float xDiag = prOsc.x * 4.0 - t;
+    float yDiag = prOsc.y * 3.0;
+    vec2 coordDiag = vec2(xDiag, yDiag);
 
-    if (rippleT > 0.0) {
-      // distance au centre dans le repère du flux
-      float r = length(prOsc - center);
-      float waveFront = rippleT * 0.6;
-      float envelope = exp(-2.0 * rippleT) * exp(-4.0 * abs(r - waveFront));
-      float phase = 14.0 * (r - waveFront);
-      float w = sin(phase) * envelope;
+    // Coord vortex (flux final circulaire)
+    vec2 v = prOsc - center;
+    float r = length(v) + 1e-4;
+    float theta = atan(v.y, v.x);
 
-      rippleField = w;
+    float swirlScale = 1.8;      // densité des tours
+    float omega = 0.8;           // vitesse de rotation angulaire
 
-      // déplacement radial pour "étaler" le flux en cercle
-      vec2 dir = normalize(prOsc - center + 1e-4);
-      float strength = 0.4;
-      prDeformed += dir * w * strength;
-    }
+    float xVortex = theta * swirlScale - u_time * omega;
+    float yVortex = (r - 0.15) * 4.0;   // variation radiale pour les filaments
+    vec2 coordVortex = vec2(xVortex, yVortex);
 
-    // Coordonnées pour les filaments
-    float x = prDeformed.x * 4.0 - t;  // compression + advection
-    float y = prDeformed.y * 3.0;
+    // Phase de morphing (B3 : vortex moyen + transition lente)
+    float tPhaseStart = rippleStart + 0.2;
+    float tPhaseEnd   = tPhaseStart + 2.5;    // ~2.5 s de transition douce
+    float phase = clamp(smoothstep(tPhaseStart, tPhaseEnd, u_time), 0.0, 1.0);
+
+    // Coord finale utilisées pour dessiner les filaments
+    vec2 coord = mix(coordDiag, coordVortex, phase);
+    float x = coord.x;
+    float y = coord.y;
 
     // couleur de base (bleu nuit)
     vec3 col = vec3(0.0, 0.02, 0.07);
 
-    // ---- FILAMENTS SINUSOÏDAUX (densité élevée C, luminosité moyenne L2) ----
+    // ---- FILAMENTS SINUSOÏDAUX (densité C, luminosité moyenne L2) ----
 
     float f1 = smoothstep(0.10, 0.0, abs(y - 0.30 * sin(x * 1.2 + 0.3)));
     vec3 c1 = vec3(0.03, 0.15, 0.40);
@@ -100,7 +106,7 @@ const fragmentShader = `
     float f6 = smoothstep(0.06, 0.0, abs(y + 0.18 * sin(x * 2.6 + 5.1)));
     vec3 c6 = vec3(0.18, 0.45, 0.85);
 
-    // accumulation des filaments
+    // accumulation filaments
     col += c1 * f1;
     col += c2 * f2;
     col += c3 * f3;
@@ -108,25 +114,31 @@ const fragmentShader = `
     col += c5 * f5 * 0.8;
     col += c6 * f6 * 0.7;
 
-    // renforcement global au centre du ruban
-    float bandMask = smoothstep(0.5, 0.0, abs(prDeformed.y));
+    // renforcement global au centre du ruban (dans prOsc.y)
+    float bandMask = smoothstep(0.5, 0.0, abs(prOsc.y));
     col *= bandMask * 1.4;
 
     // vignette douce
     float d = length(p);
     col *= smoothstep(0.9, 0.3, d);
 
-    // modulation par l'onde : éclaircissement + contraste local
+    // ---------------- PERTURBATION PAR L'ONDE (colorimétrique) ----------------
+
     if (rippleT > 0.0) {
+      float rLocal = length(prOsc - center);
+      float waveFront = rippleT * 0.6;
+      float envelope = exp(-4.0 * abs(rLocal - waveFront)); // reste visible
+      float phaseWave = 14.0 * (rLocal - waveFront);
+      float w = sin(phaseWave) * envelope;
+
       vec3 rippleTint = vec3(0.15, 0.30, 0.55);
-      col += rippleTint * rippleField;
-      col *= 1.0 + 0.7 * rippleField;
+      col += rippleTint * w * 0.7;
+      col *= 1.0 + 0.5 * w;
     }
 
-    // clamp pour ne pas saturer
+    // clamp pour rester propre
     col = clamp(col, 0.0, 1.0);
 
-    // alpha partiel pour voir le fond
     gl_FragColor = vec4(col, 0.8);
   }
 `;
@@ -232,18 +244,16 @@ export default function Home() {
           <p className="hero-top">ATLANTIC PULSE</p>
 
           <h1 className="hero-title">
-            L’océan
-            <br />
-            respire
+            Ink & Light
           </h1>
         </div>
 
         {/* Zone goutte + onde */}
         <div className="impact-zone">
-          {/* Goutte : chute depuis tout en haut + forme réaliste */}
+          {/* Goutte : plus petite, 3D, chute depuis tout en haut */}
           <motion.div
             className="drop"
-            initial={{ top: -120, opacity: 1 }}
+            initial={{ top: -140, opacity: 1 }}
             animate={{ top: 40, opacity: 0 }}
             transition={{
               delay: 0.5,
@@ -257,15 +267,34 @@ export default function Home() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                <radialGradient id="dropGradient" cx="30%" cy="15%" r="80%">
+                <radialGradient id="dropGradient" cx="30%" cy="20%" r="80%">
                   <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="40%" stopColor="#e0f4ff" />
-                  <stop offset="100%" stopColor="#7fc9ff" />
+                  <stop offset="35%" stopColor="#e5f5ff" />
+                  <stop offset="100%" stopColor="#5fb7ff" />
+                </radialGradient>
+                <radialGradient id="dropHighlight" cx="20%" cy="15%" r="40%">
+                  <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                  <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
                 </radialGradient>
               </defs>
+
+              {/* corps principal */}
               <path
-                d="M16 0 C24 10 30 20 30 28 C30 38 24 46 16 48 C8 46 2 38 2 28 C2 20 8 10 16 0 Z"
+                d="M16 1 C23 11 29 20 29 27 C29 36 23 43 16 45 C9 43 3 36 3 27 C3 20 9 11 16 1 Z"
                 fill="url(#dropGradient)"
+              />
+              {/* ombre interne */}
+              <path
+                d="M16 6 C21 14 25 20 25 26 C25 32 21 37 16 39 C11 37 7 32 7 26 C7 20 11 14 16 6 Z"
+                fill="rgba(0,20,60,0.18)"
+              />
+              {/* highlight spéculaire */}
+              <ellipse
+                cx="11"
+                cy="11"
+                rx="4"
+                ry="3"
+                fill="url(#dropHighlight)"
               />
             </svg>
           </motion.div>
@@ -304,7 +333,7 @@ export default function Home() {
               window.location.href = "/map";
             }}
           >
-            Entrer dans l’océan
+            Explore ocean
           </motion.button>
         )}
       </section>

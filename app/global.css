@@ -133,22 +133,22 @@ body {
 .impact-zone {
   position: relative;
   width: 230px;
-  height: 180px;
+  height: 190px;
   margin: 0 auto 3rem auto;
   z-index: 1;
 }
 
-/* Goutte : wrapper animé par Framer, SVG à l'intérieur */
+/* Goutte plus petite, 3D */
 .drop {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
-  height: 48px;
+  width: 22px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 18px rgba(220, 240, 255, 0.95));
+  filter: drop-shadow(0 0 14px rgba(220, 240, 255, 0.95));
 }
 
 .drop-svg {
@@ -157,15 +157,17 @@ body {
   display: block;
 }
 
-/* onde centrée sur le point d'impact
-   goutte : top final 40, hauteur 48 -> centre ~ 40 + 24 = 64 */
+/* Centre de la goutte :
+   - top animé vers 40px
+   - hauteur ~34px -> centre ≈ 40 + 17 = 57
+   Donc on met le centre de l'onde ≈ 56–58px */
 .ripple {
   position: absolute;
-  top: 64px;          /* centre géométrique */
+  top: 58px;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1.7px solid rgba(230, 245, 255, 0.9);
 }
@@ -222,7 +224,7 @@ body {
 
   .impact-zone {
     width: 210px;
-    height: 160px;
+    height: 170px;
     margin-bottom: 2.6rem;
   }
 }
