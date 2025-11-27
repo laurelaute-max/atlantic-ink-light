@@ -238,7 +238,7 @@ export default function Home() {
           {/* Goutte (chute + dilution) */}
           <motion.div
             className="drop"
-            initial={{ top: -160, scaleY: 1.15, scaleX: 0.85, opacity: 1 }}
+            initial={{ top: -80, scaleY: 1.15, scaleX: 0.85, opacity: 1 }}
             animate={[
               // chute
               { top: 40, scaleY: 1.0, scaleX: 1.0, opacity: 1, transition: { duration: 5, ease: "easeOut" } },
