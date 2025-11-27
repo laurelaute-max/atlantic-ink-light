@@ -38,7 +38,10 @@ const fragmentShader = `
     float t = u_time * 0.2;
 
     vec2 center = vec2(0.0, -0.05);
-    float rippleStart = 9.0;
+
+    // --- IMPORTANT : moment où l'onde commence (sec) ---
+    // On synchronise pour que ça démarre après la disparition complète de la goutte
+    float rippleStart = 8.8;
     float rippleT = max(u_time - rippleStart, 0.0);
 
     // OSCILLATIONS DU RUBAN
@@ -111,7 +114,7 @@ const fragmentShader = `
     float d = length(p);
     col *= smoothstep(0.9, 0.3, d);
 
-    // ---------------- MULTI-ONDES POUR LES VAGUELETTES ----------------
+    // ---------------- MULTI-ONDES + LÉGER EFFET CHROMATIQUE ----------------
     if (rippleT > 0.0) {
         float rLocal = length(prOsc - center);
 
@@ -123,9 +126,14 @@ const fragmentShader = `
         float w = w1 * 1.0 + w2 * 0.7 + w3 * 0.4 + w4 * 0.2;
 
         vec3 rippleTint = vec3(0.25, 0.45, 0.80);
-
         col += rippleTint * w * 0.45;
         col *= 1.0 + 0.35 * w;
+
+        // --- léger halo chromatique autour des vaguelettes ---
+        float edge = smoothstep(0.0, 0.4, abs(w));
+        // on pousse un peu le rouge côté intérieur, le bleu à l'extérieur
+        col.r += 0.08 * w * edge;
+        col.b += 0.10 * (-w) * edge;
     }
 
     col = clamp(col, 0.0, 1.0);
@@ -213,6 +221,7 @@ export default function Home() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
+    // on laisse un peu de temps après les ondes
     const timer = setTimeout(() => setShowButton(true), 13000);
     return () => clearTimeout(timer);
   }, []);
@@ -229,25 +238,25 @@ export default function Home() {
         <div className="hero-text">
           <p className="hero-top">ATLANTIC PULSE</p>
           <h1 className="hero-title">
-            Ink & Light
+            Ink & Light 
           </h1>
         </div>
 
         {/* Impact zone */}
         <div className="impact-zone">
-          {/* Goutte (chute + dilution) */}
+          {/* Goutte : chute plus rapide + dilution ensuite */}
           <motion.div
             className="drop"
             initial={{ top: -80, scaleY: 1.15, scaleX: 0.85, opacity: 1 }}
             animate={[
-              // chute
-              { top: 40, scaleY: 1.0, scaleX: 1.0, opacity: 1, transition: { duration: 5, ease: "easeOut" } },
-              // splat
+              // 1 — chute (plus rapide qu'avant)
+              { top: 40, scaleY: 1.0, scaleX: 1.0, opacity: 1, transition: { duration: 3.5, ease: "easeOut" } },
+              // 2 — splat léger
               { scaleX: 1.25, scaleY: 0.75, transition: { duration: 0.6, ease: "easeOut" }},
-              // dilution
-              { scaleX: 1.4, scaleY: 0.9, opacity: 0.6, transition: { duration: 1.4, ease: "easeOut" }},
-              // disparition liquide
-              { scaleX: 1.6, scaleY: 1.1, opacity: 0.0, transition: { duration: 1.8, ease: "easeInOut" }},
+              // 3 — début de dilution
+              { scaleX: 1.4, scaleY: 0.9, opacity: 0.6, transition: { duration: 1.7, ease: "easeOut" }},
+              // 4 — dissolution finale (jusqu'à disparition)
+              { scaleX: 1.6, scaleY: 1.1, opacity: 0.0, transition: { duration: 3.0, ease: "easeInOut" }},
             ]}
           >
             <svg
@@ -290,13 +299,13 @@ export default function Home() {
             </svg>
           </motion.div>
 
-          {/* Ondes principales */}
+          {/* Ondes principales — démarrent APRÈS la disparition de la goutte */}
           <motion.div
             className="ripple ripple-main"
             initial={{ scale: 0, opacity: 0.7 }}
             animate={{ scale: 6, opacity: 0 }}
             transition={{
-              delay: 8.5,
+              delay: 8.8,      // aligné avec rippleStart du shader
               duration: 4.2,
               ease: "easeOut",
             }}
@@ -306,19 +315,19 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.5 }}
             animate={{ scale: 8.2, opacity: 0 }}
             transition={{
-              delay: 8.7,
+              delay: 9.0,
               duration: 5.4,
               ease: "easeOut",
             }}
           />
 
-          {/* Vaguelettes */}
+          {/* Vaguelettes concentriques supplémentaires */}
           <motion.div
             className="ripple ripple-small"
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 3, opacity: 0 }}
             transition={{
-              delay: 8.6,
+              delay: 8.9,
               duration: 2.8,
               ease: "easeOut"
             }}
@@ -328,7 +337,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.45 }}
             animate={{ scale: 4.5, opacity: 0 }}
             transition={{
-              delay: 8.7,
+              delay: 9.0,
               duration: 3.6,
               ease: "easeOut"
             }}
@@ -338,7 +347,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.35 }}
             animate={{ scale: 6.5, opacity: 0 }}
             transition={{
-              delay: 8.9,
+              delay: 9.1,
               duration: 4.5,
               ease: "easeOut"
             }}
@@ -348,7 +357,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.28 }}
             animate={{ scale: 9, opacity: 0 }}
             transition={{
-              delay: 9.1,
+              delay: 9.3,
               duration: 5.4,
               ease: "easeOut"
             }}
@@ -373,3 +382,4 @@ export default function Home() {
     </main>
   );
 }
+
