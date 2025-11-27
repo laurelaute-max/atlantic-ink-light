@@ -259,11 +259,11 @@ export default function Home() {
           {/* Goutte : plus petite, eau 3D, chute depuis tout en haut */}
           <motion.div
             className="drop"
-            initial={{ top: -140, opacity: 1, scaleY: 1.1, scaleX: 0.9 }}
+            initial={{ top: -80, opacity: 1, scaleY: 1.1, scaleX: 0.9 }}
             animate={{ top: 40, opacity: 0, scaleY: 1.0, scaleX: 1.0 }}
             transition={{
               delay: 0.5,
-              duration: 10.0,
+              duration: 5.0,
               ease: "easeOut",
             }}
           >
