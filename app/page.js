@@ -305,7 +305,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.7 }}
             animate={{ scale: 6, opacity: 0 }}
             transition={{
-              delay: 8.8,      // aligné avec rippleStart du shader
+              delay: 4,1,      // aligné avec rippleStart du shader
               duration: 4.2,
               ease: "easeOut",
             }}
