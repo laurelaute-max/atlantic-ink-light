@@ -133,31 +133,39 @@ body {
 .impact-zone {
   position: relative;
   width: 230px;
-  height: 160px;
+  height: 180px;
   margin: 0 auto 3rem auto;
   z-index: 1;
 }
 
-/* goutte : top animé par Framer, centre horizontal fixe */
+/* Goutte : wrapper animé par Framer, SVG à l'intérieur */
 .drop {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 16px;
-  height: 16px;
-  background: radial-gradient(circle at 30% 20%, #ffffff, #a5e3ff);
-  border-radius: 50%;
-  box-shadow: 0 0 16px rgba(220, 240, 255, 0.9);
+  width: 32px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 18px rgba(220, 240, 255, 0.95));
 }
 
-/* onde centrée sur le point d'impact (top final 40, rayon ≈ 8) */
+.drop-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* onde centrée sur le point d'impact
+   goutte : top final 40, hauteur 48 -> centre ~ 40 + 24 = 64 */
 .ripple {
   position: absolute;
-  top: 48px;          /* 40 + 8 = centre géométrique */
+  top: 64px;          /* centre géométrique */
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1.7px solid rgba(230, 245, 255, 0.9);
 }
@@ -214,8 +222,7 @@ body {
 
   .impact-zone {
     width: 210px;
-    height: 140px;
+    height: 160px;
     margin-bottom: 2.6rem;
   }
 }
-
