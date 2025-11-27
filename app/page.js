@@ -41,7 +41,7 @@ const fragmentShader = `
 
     // --- IMPORTANT : moment où l'onde commence (sec) ---
     // On synchronise pour que ça démarre après la disparition complète de la goutte
-    float rippleStart = 4.1;
+    float rippleStart = 4.0;
     float rippleT = max(u_time - rippleStart, 0.0);
 
     // OSCILLATIONS DU RUBAN
@@ -305,7 +305,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.7 }}
             animate={{ scale: 6, opacity: 0 }}
             transition={{
-              delay: 4.1,      // aligné avec rippleStart du shader
+              delay: 4.0,      // aligné avec rippleStart du shader
               duration: 4.2,
               ease: "easeOut",
             }}
