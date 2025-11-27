@@ -287,9 +287,7 @@ export default function Home() {
           <p className="hero-top">ATLANTIC PULSE</p>
 
           <h1 className="hero-title">
-            L’océan
-            <br />
-            respire
+            Ink & Light
           </h1>
         </div>
 
@@ -438,7 +436,7 @@ export default function Home() {
               window.location.href = "/map";
             }}
           >
-            Entrer dans l’océan
+            Explore ocean
           </motion.button>
         )}
       </section>
