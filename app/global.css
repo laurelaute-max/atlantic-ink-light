@@ -40,7 +40,7 @@ body {
   overflow: hidden;
 }
 
-/* Couches de fond standards */
+/* Couches de fond */
 
 .bg-layer {
   position: fixed;
@@ -78,7 +78,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -3; /* entre bg-image/tint et le contenu */
+  z-index: -3;
 }
 
 .ink-layer canvas {
@@ -138,17 +138,19 @@ body {
   z-index: 1;
 }
 
-/* Goutte plus petite, 3D */
+/* Goutte plus petite, lumineuse, plus 3D */
 .drop {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 22px;
-  height: 34px;
+  width: 20px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 14px rgba(220, 240, 255, 0.95));
+  filter:
+    drop-shadow(0 0 8px rgba(200, 230, 255, 0.95))
+    drop-shadow(0 0 14px rgba(120, 190, 255, 0.9));
 }
 
 .drop-svg {
@@ -157,13 +159,10 @@ body {
   display: block;
 }
 
-/* Centre de la goutte :
-   - top animé vers 40px
-   - hauteur ~34px -> centre ≈ 40 + 17 = 57
-   Donc on met le centre de l'onde ≈ 56–58px */
+/* centre de la goutte ≈ 40 + 15 = 55px -> onde centrée autour de ~56px */
 .ripple {
   position: absolute;
-  top: 58px;
+  top: 56px;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 30px;
