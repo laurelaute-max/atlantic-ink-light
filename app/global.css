@@ -114,21 +114,22 @@ body {
 
 .hero-top {
   font-family: "Cormorant Garamond", serif;
-  letter-spacing: 0.32em;
-  font-size: 0.8rem;
+  letter-spacing: 0.4em;
+  font-size: 1rem;
   text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 1.8rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 18px rgba(100, 180, 255, 0.5);
 }
 
 .hero-title {
   font-family: "Playfair Display", serif;
-  font-size: clamp(2.6rem, 6vw, 3.8rem);
+  font-size: clamp(2.7rem, 6.2vw, 3.9rem);
   line-height: 1.1;
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-/* ---------- IMPACT : GOUTTE + ONDE ---------- */
+/* ---------- IMPACT : GOUTTE + ONDES ---------- */
 
 .impact-zone {
   position: relative;
@@ -159,13 +160,9 @@ body {
   display: block;
 }
 
-/* Centre de la goutte :
-   - top animé vers 40px
-   - hauteur ~30px -> centre ≈ 40 + 15 = 55
-   Donc on centre l'onde vers 55–56px */
+/* Ondes : centrées dynamiquement en JS -> on ne fixe pas top ici */
 .ripple {
   position: absolute;
-  top: 56px;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 30px;
@@ -179,7 +176,7 @@ body {
 }
 
 .ripple-secondary {
-  border-color: rgba(210, 235, 255, 0.7);
+  border-color: rgba(220, 240, 255, 0.6);
 }
 
 .ripple-third {
@@ -188,6 +185,10 @@ body {
 
 .ripple-fourth {
   border-color: rgba(200, 230, 250, 0.35);
+}
+
+.ripple-fifth {
+  border-color: rgba(190, 225, 245, 0.28);
 }
 
 /* ---------- BOUTON ---------- */
@@ -229,7 +230,7 @@ body {
   }
 
   .hero-title {
-    font-size: clamp(2.3rem, 8vw, 3.2rem);
+    font-size: clamp(2.4rem, 8vw, 3.3rem);
   }
 
   .impact-zone {
@@ -238,3 +239,4 @@ body {
     margin-bottom: 2.6rem;
   }
 }
+
