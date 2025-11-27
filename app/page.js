@@ -315,7 +315,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.5 }}
             animate={{ scale: 8.2, opacity: 0 }}
             transition={{
-              delay: 9.0,
+              delay: 8.3,
               duration: 5.4,
               ease: "easeOut",
             }}
@@ -327,7 +327,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 3, opacity: 0 }}
             transition={{
-              delay: 8.9,
+              delay: 8.3,
               duration: 2.8,
               ease: "easeOut"
             }}
@@ -337,7 +337,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.45 }}
             animate={{ scale: 4.5, opacity: 0 }}
             transition={{
-              delay: 9.0,
+              delay: 8.4,
               duration: 3.6,
               ease: "easeOut"
             }}
@@ -347,7 +347,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.35 }}
             animate={{ scale: 6.5, opacity: 0 }}
             transition={{
-              delay: 9.1,
+              delay: 8.5,
               duration: 4.5,
               ease: "easeOut"
             }}
@@ -357,7 +357,7 @@ export default function Home() {
             initial={{ scale: 0, opacity: 0.28 }}
             animate={{ scale: 9, opacity: 0 }}
             transition={{
-              delay: 9.3,
+              delay: 8.6,
               duration: 5.4,
               ease: "easeOut"
             }}
