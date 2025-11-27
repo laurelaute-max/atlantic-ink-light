@@ -22,134 +22,130 @@ const fragmentShader = `
 
   varying vec2 vUv;
 
-  vec2 rotate2D(vec2 p, float a) {
+  // rotation 2D
+  vec2 rotate(vec2 p, float a) {
     float s = sin(a);
     float c = cos(a);
     return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
   }
 
   void main() {
+    // coord normalisées (0–1)
     vec2 uv = vUv;
+
+    // centrer et passer en repère [-1,1]
     vec2 p = uv - 0.5;
 
-    // orientation diagonale de base
-    float baseAngle = radians(-30.0);
-    vec2 pr = rotate2D(p, baseAngle);
+    // flux diagonal bas-gauche -> haut-droit
+    float angle = radians(-30.0);
+    vec2 pr = rotate(p, angle);
 
+    // temps et vitesse globale (flux plutôt lent)
     float t = u_time * 0.2;
 
-    // centre de l'impact dans le repère du flux
+    // centre approximatif de l'impact (repère du flux)
     vec2 center = vec2(0.0, -0.05);
-    float rippleStart = 9.0;
-    float rippleT = max(u_time - rippleStart, 0.0);
 
-    // petites oscillations "veines" sur le flux diagonal
+    // oscillations (veines qui serpentent) AVANT swirl
     vec2 prOsc = pr;
     prOsc.y += 0.05 * sin(pr.x * 2.3 + t * 0.8);
     prOsc.y += 0.03 * sin(pr.x * 4.1 - t * 0.6);
     prOsc.x += 0.02 * sin(pr.y * 3.0 + t * 0.7);
 
-    vec2 base = prOsc;
+    // ---------------- TRANSITION DIAGONAL -> VORTEX DOUX ----------------
 
-    // ---------------- TRANSITION DIAGONALE -> VORTEX LUMINEUX ----------------
+    float rippleStart = 9.0;                // début de l'onde en secondes
+    float swirlPhaseStart = rippleStart + 0.2;
+    float swirlPhaseEnd   = swirlPhaseStart + 2.5; // transition lente (~2.5 s)
 
-    float tPhaseStart = rippleStart + 0.2;
-    float tPhaseEnd   = tPhaseStart + 2.5;  // transition lente (≈ B3)
-    float rawPhase = (u_time - tPhaseStart) / (tPhaseEnd - tPhaseStart);
-    float phase = clamp(smoothstep(0.0, 1.0, rawPhase), 0.0, 1.0);
-
-    // champ final utilisé pour tracer les filaments
-    vec2 prFlow = base;
-
-    // distance au centre (utile pour vortex + onde)
-    float rCenter = length(base - center);
-
-    if (phase > 0.0) {
-      vec2 fromCenter = base - center;
-      float r = length(fromCenter) + 1e-4;
-
-      // masque radial : fort au centre, décroissant vers l'extérieur
-      float radialMask = exp(-2.5 * r);
-
-      // swirl moyen mais bien visible, style galaxie d'encre
-      float swirlStrength = 3.5;
-      float swirl = swirlStrength * phase * radialMask;
-
-      float s = sin(swirl);
-      float c = cos(swirl);
-
-      vec2 swirled = vec2(
-        c * fromCenter.x - s * fromCenter.y,
-        s * fromCenter.x + c * fromCenter.y
+    float swirlStrength = 0.0;
+    if (u_time > swirlPhaseStart) {
+      swirlStrength = clamp(
+        (u_time - swirlPhaseStart) / (swirlPhaseEnd - swirlPhaseStart),
+        0.0,
+        1.0
       );
-
-      // léger "gonflement" radial pour l'effet sphérique
-      float expand = 0.45;
-      swirled *= 1.0 + expand * phase * radialMask;
-
-      prFlow = center + swirled;
     }
 
-    // coordonnées finales pour les filaments
-    float x = prFlow.x * 4.2 - t;
-    float y = prFlow.y * 3.2;
+    // flux final : on part de prOsc et on ajoute un swirl tangentiel
+    vec2 prFlow = prOsc;
+    if (swirlStrength > 0.0) {
+      vec2 v = prOsc - center;
+      float r = length(v) + 1e-4;
+      vec2 vDir = v / r;
+      vec2 tang = vec2(-vDir.y, vDir.x); // tangente (rotation 90°)
 
-    // fond très sombre, légèrement bleuté
-    vec3 col = vec3(0.0, 0.015, 0.05);
+      // masque radial : surtout autour d'un anneau, pas trop au centre/loin
+      float radialInner = smoothstep(0.0, 0.3, r);
+      float radialOuter = smoothstep(1.4, 0.5, r);
+      float radialMask = radialInner * radialOuter;
 
-    // ---- FILAMENTS LUMINEUX (C + style 4 "galaxie d'encre") ----
+      float swirlAmount = swirlStrength * radialMask * 0.35;
+      prFlow += tang * swirlAmount;
+    }
 
-    float f1 = smoothstep(0.12, 0.0, abs(y - 0.32 * sin(x * 1.1 + 0.3)));
-    vec3  c1 = vec3(0.05, 0.18, 0.45);
+    // Coordonnées de filaments basées sur prFlow (diagonal -> vortex)
+    float x = prFlow.x * 4.0 - t;
+    float y = prFlow.y * 3.0;
 
-    float f2 = smoothstep(0.10, 0.0, abs(y + 0.27 * sin(x * 1.3 + 1.2)));
-    vec3  c2 = vec3(0.10, 0.35, 0.75);
+    // couleur de base (bleu nuit)
+    vec3 col = vec3(0.0, 0.02, 0.07);
 
-    float f3 = smoothstep(0.09, 0.0, abs(y - 0.22 * sin(x * 1.7 + 2.0)));
-    vec3  c3 = vec3(0.25, 0.70, 1.00);
+    // ---- FILAMENTS SINUSOÏDAUX (densité C, luminosité moyenne L2) ----
 
-    float f4 = smoothstep(0.08, 0.0, abs(y + 0.18 * sin(x * 2.1 + 3.0)));
-    vec3  c4 = vec3(0.55, 0.90, 1.00);
+    float f1 = smoothstep(0.10, 0.0, abs(y - 0.30 * sin(x * 1.2 + 0.3)));
+    vec3 c1 = vec3(0.03, 0.15, 0.40);
 
-    float f5 = smoothstep(0.06, 0.0, abs(y - 0.14 * sin(x * 2.4 + 4.0)));
-    vec3  c5 = vec3(0.98, 0.99, 1.00);
+    float f2 = smoothstep(0.09, 0.0, abs(y + 0.25 * sin(x * 1.1 + 1.2)));
+    vec3 c2 = vec3(0.06, 0.30, 0.65);
 
-    float f6 = smoothstep(0.07, 0.0, abs(y + 0.20 * sin(x * 2.8 + 5.1)));
-    vec3  c6 = vec3(0.70, 0.88, 1.00);
+    float f3 = smoothstep(0.08, 0.0, abs(y - 0.20 * sin(x * 1.6 + 2.0)));
+    vec3 c3 = vec3(0.15, 0.55, 0.90);
 
+    float f4 = smoothstep(0.07, 0.0, abs(y + 0.15 * sin(x * 1.9 + 3.0)));
+    vec3 c4 = vec3(0.35, 0.80, 1.0);
+
+    float f5 = smoothstep(0.05, 0.0, abs(y - 0.12 * sin(x * 2.2 + 4.0)));
+    vec3 c5 = vec3(0.90, 0.95, 1.0);
+
+    float f6 = smoothstep(0.06, 0.0, abs(y + 0.18 * sin(x * 2.6 + 5.1)));
+    vec3 c6 = vec3(0.18, 0.45, 0.85);
+
+    // accumulation filaments
     col += c1 * f1;
     col += c2 * f2;
     col += c3 * f3;
-    col += c4 * f4 * 0.9;
-    col += c5 * f5 * 1.0;
-    col += c6 * f6 * 0.85;
+    col += c4 * f4 * 0.8;
+    col += c5 * f5 * 0.8;
+    col += c6 * f6 * 0.7;
 
-    // "épaisseur" du ruban, renforcement central (en fonction du flux de base)
-    float bandMask = smoothstep(0.7, 0.0, abs(base.y));
-    col *= bandMask * (1.5 + 0.5 * phase);
+    // renforcement global au centre du ruban (avant swirl : basé sur pr)
+    float bandMask = smoothstep(0.5, 0.0, abs(pr.y));
+    col *= bandMask * 1.4;
 
     // vignette douce
     float d = length(p);
-    col *= smoothstep(0.95, 0.35, d);
+    col *= smoothstep(0.9, 0.3, d);
 
-    // ---------------- GLOW LUMINEUX DE L'ONDE ----------------
+    // ---------------- PERTURBATION PAR L'ONDE (colorimétrique douce) ---------------
 
+    float rippleT = max(u_time - rippleStart, 0.0);
     if (rippleT > 0.0) {
+      float rLocal = length(prOsc - center);
       float waveFront = rippleT * 0.6;
-      float envelope = exp(-4.0 * abs(rCenter - waveFront));
-      float phaseWave = 16.0 * (rCenter - waveFront);
+      float envelope = exp(-4.0 * abs(rLocal - waveFront)); // reste localement visible
+      float phaseWave = 14.0 * (rLocal - waveFront);
       float w = sin(phaseWave) * envelope;
 
-      // halo bleu-cyan très lumineux
-      vec3 rippleGlow = vec3(0.35, 0.65, 1.0);
-      col += rippleGlow * w * 0.9;
+      vec3 rippleTint = vec3(0.15, 0.30, 0.55);
+      col += rippleTint * w * 0.6;
       col *= 1.0 + 0.4 * w;
     }
 
-    // clamp pour éviter les saturations bizarres
+    // clamp pour rester propre
     col = clamp(col, 0.0, 1.0);
 
-    gl_FragColor = vec4(col, 0.85);
+    gl_FragColor = vec4(col, 0.8);
   }
 `;
 
@@ -260,11 +256,11 @@ export default function Home() {
 
         {/* Zone goutte + onde */}
         <div className="impact-zone">
-          {/* Goutte : plus petite, plus 3D, lumineuse, chute depuis le haut */}
+          {/* Goutte : plus petite, eau 3D, chute depuis tout en haut */}
           <motion.div
             className="drop"
-            initial={{ top: -150, opacity: 1 }}
-            animate={{ top: 40, opacity: 0 }}
+            initial={{ top: -140, opacity: 1, scaleY: 1.1, scaleX: 0.9 }}
+            animate={{ top: 40, opacity: 0, scaleY: 1.0, scaleX: 1.0 }}
             transition={{
               delay: 0.5,
               duration: 10.0,
@@ -277,58 +273,48 @@ export default function Home() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                {/* corps lumineux bleu-blanc */}
-                <radialGradient id="dropGradient" cx="30%" cy="20%" r="80%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="35%" stopColor="#ecf7ff" />
-                  <stop offset="100%" stopColor="#68c4ff" />
+                {/* gradient principal translucide */}
+                <radialGradient id="dropGradient" cx="35%" cy="20%" r="80%">
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+                  <stop offset="35%" stopColor="#e5f5ff" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#3c7bb7" stopOpacity="0.4" />
                 </radialGradient>
-                {/* highlight très marqué */}
-                <radialGradient id="dropHighlight" cx="22%" cy="18%" r="45%">
+                {/* highlight local */}
+                <radialGradient id="dropHighlight" cx="25%" cy="18%" r="35%">
                   <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
                   <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
                 </radialGradient>
-                {/* liseré externe très léger */}
-                <radialGradient id="dropRim" cx="50%" cy="60%" r="80%">
-                  <stop offset="70%" stopColor="rgba(120,190,255,0.0)" />
-                  <stop offset="100%" stopColor="rgba(120,190,255,0.6)" />
-                </radialGradient>
               </defs>
 
-              {/* halo externe léger */}
-              <ellipse
-                cx="16"
-                cy="30"
-                rx="11"
-                ry="15"
-                fill="url(#dropRim)"
-                opacity="0.65"
-              />
-
-              {/* corps principal */}
+              {/* corps principal (légèrement asymétrique) */}
               <path
-                d="M16 1 C23 11 29 20 29 27 C29 36 23 43 16 45 C9 43 3 36 3 27 C3 20 9 11 16 1 Z"
+                d="M16 1 C23 11 28.5 20 28.5 27 C28.5 36 22.5 43.5 16 45 C9.5 43.5 3.5 36 3.5 27 C3.5 20 9 11 16 1 Z"
                 fill="url(#dropGradient)"
               />
-
-              {/* ombre interne subtile */}
+              {/* ombre interne douce */}
               <path
-                d="M16 7 C21 15 25 21 25 27 C25 33 21 38 16 40 C11 38 7 33 7 27 C7 21 11 15 16 7 Z"
-                fill="rgba(0,18,60,0.22)"
+                d="M16 7 C21 15 24.5 21 24.5 26.5 C24.5 32 21 37 16 38.5 C11 37 7.5 32 7.5 26.5 C7.5 21 11 15 16 7 Z"
+                fill="rgba(0,20,60,0.18)"
               />
-
-              {/* highlight spéculaire fort */}
+              {/* highlight spéculaire */}
               <ellipse
                 cx="11"
-                cy="12"
+                cy="11"
                 rx="4"
                 ry="3"
                 fill="url(#dropHighlight)"
               />
+              {/* léger halo contour pour le volume */}
+              <path
+                d="M16 1 C23 11 28.5 20 28.5 27 C28.5 36 22.5 43.5 16 45 C9.5 43.5 3.5 36 3.5 27 C3.5 20 9 11 16 1 Z"
+                fill="none"
+                stroke="rgba(200,230,255,0.35)"
+                strokeWidth="0.6"
+              />
             </svg>
           </motion.div>
 
-          {/* Ondes centrées sur le point d’impact (≈ centre de la goutte) */}
+          {/* Ondes centrées sur le point d’impact */}
           <motion.div
             className="ripple ripple-main"
             initial={{ scale: 0, opacity: 0.7 }}
@@ -369,3 +355,4 @@ export default function Home() {
     </main>
   );
 }
+
